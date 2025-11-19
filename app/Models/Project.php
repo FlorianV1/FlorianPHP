@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class Project extends Model
 {
@@ -39,18 +40,39 @@ class Project extends Model
         'tech_stack'    => 'array',
     ];
 
+    /**
+     * Only projects that are currently ongoing.
+     */
+    public function scopeOngoing($query)
+    {
+        return $query->where('is_ongoing', true);
+    }
+
+    /**
+     * Only projects that are posted / visible.
+     */
     public function scopePosted($query)
     {
         return $query->where('is_posted', true);
     }
 
+    /**
+     * Only featured projects.
+     */
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
     }
 
+    /**
+     * Order projects by the "order" column if it exists, otherwise by created_at.
+     */
     public function scopeOrdered($query)
     {
-        return $query->orderBy('order');
+        if (Schema::hasColumn($this->getTable(), 'order')) {
+            return $query->orderBy('order');
+        }
+
+        return $query->orderBy('created_at', 'desc');
     }
 }

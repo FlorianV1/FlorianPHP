@@ -198,8 +198,62 @@ class SiteSettings extends Page implements HasSchemas
     {
         $data = $this->form->getState();
 
+        // 1. Resolve color palette based on theme
+        $palette = $data['custom_colors'] ?? [];
+
+        if (($data['theme'] ?? 'default') !== 'custom') {
+            // Preset palettes for each theme
+            $palette = match ($data['theme']) {
+                'midnight' => [
+                    'app_bg'         => '#020617', // slate-950
+                    'surface'        => '#020617', // same deeper
+                    'accent'         => '#38bdf8', // sky-400
+                    'accent_hover'   => '#0ea5e9', // sky-500
+                    'text_primary'   => '#e5e7eb', // gray-200
+                    'text_secondary' => '#9ca3af', // gray-400
+                    'text_muted'     => '#6b7280', // gray-500
+                ],
+                'forest' => [
+                    'app_bg'         => '#020617',
+                    'surface'        => '#022c22',
+                    'accent'         => '#22c55e',
+                    'accent_hover'   => '#16a34a',
+                    'text_primary'   => '#e5e7eb',
+                    'text_secondary' => '#9ca3af',
+                    'text_muted'     => '#6b7280',
+                ],
+                'sunset' => [
+                    'app_bg'         => '#0f172a',
+                    'surface'        => '#1f2937',
+                    'accent'         => '#fb923c',
+                    'accent_hover'   => '#f97316',
+                    'text_primary'   => '#e5e7eb',
+                    'text_secondary' => '#9ca3af',
+                    'text_muted'     => '#6b7280',
+                ],
+                'lavender' => [
+                    'app_bg'         => '#020617',
+                    'surface'        => '#111827',
+                    'accent'         => '#a855f7',
+                    'accent_hover'   => '#7e22ce',
+                    'text_primary'   => '#e5e7eb',
+                    'text_secondary' => '#c4b5fd',
+                    'text_muted'     => '#6b7280',
+                ],
+                default => [ // "default" & anything unknown
+                    'app_bg'         => '#0E0E10',
+                    'surface'        => '#111418',
+                    'accent'         => '#4A9FFF',
+                    'accent_hover'   => '#2D7CE8',
+                    'text_primary'   => '#E7EAF0',
+                    'text_secondary' => '#A8ACB3',
+                    'text_muted'     => '#6F737A',
+                ],
+            };
+        }
+
         Settings::set('theme', $data['theme']);
-        Settings::set('custom_colors', $data['custom_colors']);
+        Settings::set('custom_colors', $palette);
         Settings::set('overlay', $data['overlay']);
         Settings::set('overlay_intensity', $data['overlay_intensity']);
         Settings::set('sections_order', $data['sections_order']);
@@ -213,6 +267,7 @@ class SiteSettings extends Page implements HasSchemas
         $this->dispatch('refresh-sidebar');
         $this->dispatch('refresh-topbar');
     }
+
 
     protected function getHeaderActions(): array
     {
