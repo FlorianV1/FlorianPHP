@@ -20,6 +20,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ViewField;
 
 class SiteSettings extends Page implements HasSchemas
 {
@@ -31,12 +32,10 @@ class SiteSettings extends Page implements HasSchemas
     protected static string|UnitEnum|null $navigationGroup = 'Settings';
     protected static ?int $navigationSort = 100;
 
-    // Data for the form
     public ?array $data = [];
 
     public function mount(): void
     {
-        // This MUST be called in v4
         $this->form->fill([
             'theme' => Settings::get('theme', 'default'),
             'custom_colors' => Settings::get('custom_colors', [
@@ -74,9 +73,10 @@ class SiteSettings extends Page implements HasSchemas
         return $schema
             ->components([
                 Section::make('Color Theme')
-                    ->description('Choose a preset theme or customize colors')
+                    ->description('Choose a preset theme or customize the palette used on the public site.')
                     ->schema([
                         Select::make('theme')
+                            ->label('Theme')
                             ->options([
                                 'default'  => '🌙 Default Dark',
                                 'midnight' => '🌌 Midnight Blue',
@@ -85,8 +85,8 @@ class SiteSettings extends Page implements HasSchemas
                                 'lavender' => '💜 Lavender Purple',
                                 'custom'   => '🎨 Custom Colors',
                             ])
-                            ->default('default')
                             ->live()
+                            ->default('default')
                             ->columnSpanFull(),
 
                         Grid::make(3)
@@ -108,7 +108,7 @@ class SiteSettings extends Page implements HasSchemas
                     ]),
 
                 Section::make('Seasonal Overlay')
-                    ->description('Add a festive overlay effect')
+                    ->description('Add a festive overlay effect to the public site.')
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -129,12 +129,12 @@ class SiteSettings extends Page implements HasSchemas
                                     ->maxValue(100)
                                     ->suffix('%')
                                     ->default(50)
-                                    ->helperText('Amount of particles'),
+                                    ->helperText('Amount of particles / visual strength'),
                             ]),
                     ]),
 
                 Section::make('Page Sections')
-                    ->description('Drag to reorder sections, toggle to show/hide')
+                    ->description('Drag to reorder sections, toggle visibility.')
                     ->schema([
                         Repeater::make('sections_order')
                             ->schema([
@@ -166,7 +166,7 @@ class SiteSettings extends Page implements HasSchemas
                     ]),
 
                 Section::make('Navbar Links')
-                    ->description('Customize navigation menu links')
+                    ->description('Customize navigation menu links.')
                     ->schema([
                         Repeater::make('navbar_links')
                             ->schema([
@@ -198,20 +198,19 @@ class SiteSettings extends Page implements HasSchemas
     {
         $data = $this->form->getState();
 
-        // 1. Resolve color palette based on theme
+        // Resolve final color palette based on theme selection
         $palette = $data['custom_colors'] ?? [];
 
         if (($data['theme'] ?? 'default') !== 'custom') {
-            // Preset palettes for each theme
             $palette = match ($data['theme']) {
                 'midnight' => [
-                    'app_bg'         => '#020617', // slate-950
-                    'surface'        => '#020617', // same deeper
-                    'accent'         => '#38bdf8', // sky-400
-                    'accent_hover'   => '#0ea5e9', // sky-500
-                    'text_primary'   => '#e5e7eb', // gray-200
-                    'text_secondary' => '#9ca3af', // gray-400
-                    'text_muted'     => '#6b7280', // gray-500
+                    'app_bg'         => '#020617', // almost-black blue
+                    'surface'        => '#030712',
+                    'accent'         => '#38bdf8',
+                    'accent_hover'   => '#0ea5e9',
+                    'text_primary'   => '#e5e7eb',
+                    'text_secondary' => '#9ca3af',
+                    'text_muted'     => '#6b7280',
                 ],
                 'forest' => [
                     'app_bg'         => '#020617',
@@ -223,24 +222,24 @@ class SiteSettings extends Page implements HasSchemas
                     'text_muted'     => '#6b7280',
                 ],
                 'sunset' => [
-                    'app_bg'         => '#0f172a',
+                    'app_bg'         => '#111827',
                     'surface'        => '#1f2937',
                     'accent'         => '#fb923c',
                     'accent_hover'   => '#f97316',
-                    'text_primary'   => '#e5e7eb',
-                    'text_secondary' => '#9ca3af',
-                    'text_muted'     => '#6b7280',
+                    'text_primary'   => '#f9fafb',
+                    'text_secondary' => '#e5e7eb',
+                    'text_muted'     => '#9ca3af',
                 ],
                 'lavender' => [
                     'app_bg'         => '#020617',
                     'surface'        => '#111827',
                     'accent'         => '#a855f7',
                     'accent_hover'   => '#7e22ce',
-                    'text_primary'   => '#e5e7eb',
+                    'text_primary'   => '#f9fafb',
                     'text_secondary' => '#c4b5fd',
-                    'text_muted'     => '#6b7280',
+                    'text_muted'     => '#9ca3af',
                 ],
-                default => [ // "default" & anything unknown
+                default => [
                     'app_bg'         => '#0E0E10',
                     'surface'        => '#111418',
                     'accent'         => '#4A9FFF',
@@ -260,14 +259,14 @@ class SiteSettings extends Page implements HasSchemas
         Settings::set('navbar_links', $data['navbar_links']);
 
         Notification::make()
-            ->title('Settings saved successfully')
+            ->title('Settings saved')
+            ->body('Your theme and layout changes are now live on the portfolio.')
             ->success()
             ->send();
 
         $this->dispatch('refresh-sidebar');
         $this->dispatch('refresh-topbar');
     }
-
 
     protected function getHeaderActions(): array
     {
