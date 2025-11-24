@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use App\Models\Settings;
 use BackedEnum;
-use Filament\Forms\Components\Slider;
 use UnitEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -21,6 +20,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
 
 class SiteSettings extends Page implements HasSchemas
 {
@@ -37,6 +37,12 @@ class SiteSettings extends Page implements HasSchemas
     public function mount(): void
     {
         $this->form->fill([
+            // BRANDING / NAVBAR (text only)
+            'navbar_brand_text'  => Settings::get('navbar_brand_text', 'Florian'),
+            'navbar_brand_color' => Settings::get('navbar_brand_color', '#ffffff'),
+            'favicon'            => Settings::get('favicon', null),
+
+            // THEME
             'theme' => Settings::get('theme', 'default'),
             'custom_colors' => Settings::get('custom_colors', [
                 'app_bg'         => '#0E0E10',
@@ -49,6 +55,8 @@ class SiteSettings extends Page implements HasSchemas
             ]),
             'overlay' => Settings::get('overlay', 'none'),
             'overlay_intensity' => Settings::get('overlay_intensity', 50),
+
+            // SECTIONS
             'sections_order' => Settings::get('sections_order', [
                 ['section' => 'hero',       'enabled' => true],
                 ['section' => 'now',        'enabled' => true],
@@ -58,6 +66,8 @@ class SiteSettings extends Page implements HasSchemas
                 ['section' => 'about',      'enabled' => true],
                 ['section' => 'contact',    'enabled' => true],
             ]),
+
+            // NAVBAR LINKS
             'navbar_links' => Settings::get('navbar_links', [
                 ['label' => 'Projects',   'url' => '#projects',   'enabled' => true],
                 ['label' => 'Experience', 'url' => '#experience', 'enabled' => true],
@@ -72,6 +82,31 @@ class SiteSettings extends Page implements HasSchemas
     {
         return $schema
             ->components([
+                // BRANDING + NAVBAR (text only)
+                Section::make('Branding & Navbar')
+                    ->description('Control the navbar brand text, its color, and favicon.')
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('navbar_brand_text')
+                                    ->label('Brand text')
+                                    ->placeholder('Florian')
+                                    ->required(),
+
+                                ColorPicker::make('navbar_brand_color')
+                                    ->label('Brand text color')
+                                    ->default('#ffffff'),
+                            ]),
+
+                        FileUpload::make('favicon')
+                            ->label('Favicon (PNG/ICO, ideally 32x32)')
+                            ->image()
+                            ->imageEditor()
+                            ->directory('favicons')
+                            ->preserveFilenames()
+                            ->nullable(),
+                    ]),
+
                 Section::make('Color Theme')
                     ->description('Choose a preset theme or customize the palette used on the public site.')
                     ->schema([
@@ -180,7 +215,7 @@ class SiteSettings extends Page implements HasSchemas
         if ($theme !== 'custom') {
             $palette = match ($theme) {
                 'midnight' => [
-                    'app_bg'         => '#020617', // almost-black blue
+                    'app_bg'         => '#020617',
                     'surface'        => '#030712',
                     'accent'         => '#38bdf8',
                     'accent_hover'   => '#0ea5e9',
@@ -216,11 +251,10 @@ class SiteSettings extends Page implements HasSchemas
                     'text_muted'     => '#9ca3af',
                 ],
                 'midnight_red' => [
-                    // Same dark base as default, but with red accents
                     'app_bg'         => '#0E0E10',
                     'surface'        => '#111418',
-                    'accent'         => '#f97373', // red-ish accent
-                    'accent_hover'   => '#ef4444', // stronger red on hover
+                    'accent'         => '#f97373',
+                    'accent_hover'   => '#ef4444',
                     'text_primary'   => '#E7EAF0',
                     'text_secondary' => '#A8ACB3',
                     'text_muted'     => '#6F737A',
@@ -237,16 +271,24 @@ class SiteSettings extends Page implements HasSchemas
             };
         }
 
+        // BRANDING / NAVBAR SETTINGS (text only)
+        Settings::set('navbar_brand_text', $data['navbar_brand_text'] ?? 'Florian');
+        Settings::set('navbar_brand_color', $data['navbar_brand_color'] ?? '#ffffff');
+        Settings::set('favicon', $data['favicon'] ?? null);
+
+        // THEME
         Settings::set('theme', $theme);
         Settings::set('custom_colors', $palette);
         Settings::set('overlay', $data['overlay'] ?? 'none');
         Settings::set('overlay_intensity', $data['overlay_intensity'] ?? 50);
+
+        // SECTIONS + NAVBAR LINKS
         Settings::set('sections_order', $data['sections_order'] ?? []);
         Settings::set('navbar_links', $data['navbar_links'] ?? []);
 
         Notification::make()
             ->title('Settings saved')
-            ->body('Your theme and layout changes are now live on the portfolio.')
+            ->body('Your branding, navbar and theme changes are now live.')
             ->success()
             ->send();
 

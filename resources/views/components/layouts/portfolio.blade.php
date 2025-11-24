@@ -11,6 +11,23 @@
     'skills' => null,
 ])
 
+@php
+    use App\Models\Settings;
+    use Illuminate\Support\Facades\Storage;
+
+    $favicon = Settings::get('favicon');
+
+    $colors = array_merge([
+        'app_bg'         => '#0E0E10',
+        'surface'        => '#111418',
+        'accent'         => '#4A9FFF',
+        'accent_hover'   => '#2D7CE8',
+        'text_primary'   => '#E7EAF0',
+        'text_secondary' => '#A8ACB3',
+        'text_muted'     => '#6F737A',
+    ], $colors ?? []);
+@endphp
+
     <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -22,6 +39,11 @@
     <meta property="og:title" content="{{ $profile->name ?? 'Florian' }} - {{ $profile->role ?? 'Software Developer' }}">
     <meta property="og:description" content="{{ $profile->tagline ?? '' }}">
 
+    {{-- Favicon from settings --}}
+    @if($favicon)
+        <link rel="icon" type="image/png" href="{{ Storage::url($favicon) }}">
+    @endif
+
     {{-- Devicons --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
 
@@ -31,7 +53,10 @@
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet"
+    >
 
     {{-- Tailwind config with CSS variables --}}
     <script>
@@ -57,18 +82,6 @@
             }
         }
     </script>
-
-    @php
-        $colors = array_merge([
-            'app_bg'         => '#0E0E10',
-            'surface'        => '#111418',
-            'accent'         => '#4A9FFF',
-            'accent_hover'   => '#2D7CE8',
-            'text_primary'   => '#E7EAF0',
-            'text_secondary' => '#A8ACB3',
-            'text_muted'     => '#6F737A',
-        ], $colors ?? []);
-    @endphp
 
     <style>
         :root {
@@ -100,17 +113,18 @@
 </head>
 
 <body class="antialiased"
+      id="top"
       data-overlay="{{ $overlay }}"
       data-overlay-intensity="{{ $overlayIntensity }}">
 
-{{-- NAVBAR --}}
+{{-- NAVBAR (reads brand + colors from Settings, links from prop/settings) --}}
 <x-portfolio.navigation
     :profile="$profile"
     :navbarLinks="$navbarLinks"
 />
 
 {{-- DYNAMIC SECTIONS VIA COMPONENTS --}}
-<main class="space-y-32 pb-16">
+<main class="space-y-32 pb-16 pt-24">
     @foreach($sectionsOrder ?? [] as $section)
         @php
             $key = $section['section'] ?? null;
