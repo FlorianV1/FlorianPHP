@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\pages;
+namespace App\Filament\Pages;
 
 use App\Models\Settings;
 use BackedEnum;
