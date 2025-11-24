@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\Settings;
 use BackedEnum;
+use Filament\Forms\Components\Slider;
 use UnitEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -20,7 +21,6 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\ViewField;
 
 class SiteSettings extends Page implements HasSchemas
 {
@@ -78,12 +78,13 @@ class SiteSettings extends Page implements HasSchemas
                         Select::make('theme')
                             ->label('Theme')
                             ->options([
-                                'default'  => '🌙 Default Dark',
-                                'midnight' => '🌌 Midnight Blue',
-                                'forest'   => '🌲 Forest Green',
-                                'sunset'   => '🌅 Sunset Orange',
-                                'lavender' => '💜 Lavender Purple',
-                                'custom'   => '🎨 Custom Colors',
+                                'default'      => '🌙 Default Dark - Blue Accent',
+                                'midnight_red' => '🌙 Default Dark - Red Accent',
+                                'midnight'     => '🌌 Midnight Blue',
+                                'forest'       => '🌲 Forest Green',
+                                'sunset'       => '🌅 Sunset Orange',
+                                'lavender'     => '💜 Lavender Purple',
+                                'custom'       => '🎨 Custom Colors',
                             ])
                             ->live()
                             ->default('default')
@@ -105,32 +106,6 @@ class SiteSettings extends Page implements HasSchemas
                                     ->label('Text Secondary'),
                             ])
                             ->visible(fn ($get) => $get('theme') === 'custom'),
-                    ]),
-
-                Section::make('Seasonal Overlay')
-                    ->description('Add a festive overlay effect to the public site.')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('overlay')
-                                    ->options([
-                                        'none'     => '❌ None',
-                                        'snow'     => '❄️ Snow',
-                                        'leaves'   => '🍂 Falling Leaves',
-                                        'hearts'   => '💕 Hearts',
-                                        'stars'    => '⭐ Stars',
-                                        'confetti' => '🎉 Confetti',
-                                    ])
-                                    ->default('none'),
-
-                                TextInput::make('overlay_intensity')
-                                    ->numeric()
-                                    ->minValue(10)
-                                    ->maxValue(100)
-                                    ->suffix('%')
-                                    ->default(50)
-                                    ->helperText('Amount of particles / visual strength'),
-                            ]),
                     ]),
 
                 Section::make('Page Sections')
@@ -197,12 +172,13 @@ class SiteSettings extends Page implements HasSchemas
     public function save(): void
     {
         $data = $this->form->getState();
+        $theme = $data['theme'] ?? 'default';
 
         // Resolve final color palette based on theme selection
         $palette = $data['custom_colors'] ?? [];
 
-        if (($data['theme'] ?? 'default') !== 'custom') {
-            $palette = match ($data['theme']) {
+        if ($theme !== 'custom') {
+            $palette = match ($theme) {
                 'midnight' => [
                     'app_bg'         => '#020617', // almost-black blue
                     'surface'        => '#030712',
@@ -239,6 +215,16 @@ class SiteSettings extends Page implements HasSchemas
                     'text_secondary' => '#c4b5fd',
                     'text_muted'     => '#9ca3af',
                 ],
+                'midnight_red' => [
+                    // Same dark base as default, but with red accents
+                    'app_bg'         => '#0E0E10',
+                    'surface'        => '#111418',
+                    'accent'         => '#f97373', // red-ish accent
+                    'accent_hover'   => '#ef4444', // stronger red on hover
+                    'text_primary'   => '#E7EAF0',
+                    'text_secondary' => '#A8ACB3',
+                    'text_muted'     => '#6F737A',
+                ],
                 default => [
                     'app_bg'         => '#0E0E10',
                     'surface'        => '#111418',
@@ -251,12 +237,12 @@ class SiteSettings extends Page implements HasSchemas
             };
         }
 
-        Settings::set('theme', $data['theme']);
+        Settings::set('theme', $theme);
         Settings::set('custom_colors', $palette);
-        Settings::set('overlay', $data['overlay']);
-        Settings::set('overlay_intensity', $data['overlay_intensity']);
-        Settings::set('sections_order', $data['sections_order']);
-        Settings::set('navbar_links', $data['navbar_links']);
+        Settings::set('overlay', $data['overlay'] ?? 'none');
+        Settings::set('overlay_intensity', $data['overlay_intensity'] ?? 50);
+        Settings::set('sections_order', $data['sections_order'] ?? []);
+        Settings::set('navbar_links', $data['navbar_links'] ?? []);
 
         Notification::make()
             ->title('Settings saved')

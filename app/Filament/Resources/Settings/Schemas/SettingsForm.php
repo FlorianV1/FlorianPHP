@@ -53,32 +53,6 @@ class SettingsForm
                             ->visible(fn ($get) => $get('theme') === 'custom'),
                     ]),
 
-                Section::make('Seasonal Overlay')
-                    ->description('Add a festive overlay effect')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('overlay')
-                                    ->options([
-                                        'none' => '❌ None',
-                                        'snow' => '❄️ Snow',
-                                        'leaves' => '🍂 Falling Leaves',
-                                        'hearts' => '💕 Hearts',
-                                        'stars' => '⭐ Stars',
-                                        'confetti' => '🎉 Confetti',
-                                    ])
-                                    ->default('none'),
-
-                                TextInput::make('overlay_intensity')
-                                    ->numeric()
-                                    ->minValue(10)
-                                    ->maxValue(100)
-                                    ->suffix('%')
-                                    ->default(50)
-                                    ->helperText('Amount of particles'),
-                            ]),
-                    ]),
-
                 Section::make('Page Sections')
                     ->description('Drag to reorder sections, toggle to show/hide')
                     ->schema([
