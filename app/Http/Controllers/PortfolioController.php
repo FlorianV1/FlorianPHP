@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Experience;
 use App\Models\Skill;
 use App\Models\Settings;
+use Illuminate\Http\Request;
 
 class PortfolioController extends Controller
 {
@@ -67,5 +68,16 @@ class PortfolioController extends Controller
             'sectionsOrder'    => $sectionsOrder,
             'navbarLinks'      => $navbarLinks,
         ]);
+    }
+
+    public function submitContact(Request $request)
+    {
+        $request->validate([
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email',
+            'message' => 'required|string',
+        ]);
+
+        return redirect()->back()->with('success', 'Message sent!');
     }
 }
