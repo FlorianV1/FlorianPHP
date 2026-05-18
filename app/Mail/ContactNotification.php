@@ -19,10 +19,10 @@ class ContactNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New message from ' . $this->contactMessage->name,
             replyTo: [
                 new Address($this->contactMessage->email, $this->contactMessage->name),
             ],
+            subject: 'New message from ' . $this->contactMessage->name,
         );
     }
 
