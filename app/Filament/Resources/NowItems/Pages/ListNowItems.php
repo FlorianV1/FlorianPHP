@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Profiles\Pages;
+namespace App\Filament\Resources\NowItems\Pages;
 
-use App\Filament\Resources\Profiles\ProfileResource;
+use App\Filament\Resources\NowItems\NowItemResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListProfiles extends ListRecords
+class ListNowItems extends ListRecords
 {
-    protected static string $resource = ProfileResource::class;
+    protected static string $resource = NowItemResource::class;
 
     protected function getHeaderActions(): array
     {

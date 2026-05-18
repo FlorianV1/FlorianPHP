@@ -13,12 +13,14 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class MessageResource extends Resource
 {
     protected static ?string $model = ContactMessage::class;
     protected static ?string $navigationLabel = 'Messages';
     protected static ?string $modelLabel = 'Message';
+    protected static string|UnitEnum|null $navigationGroup = 'Content';
     protected static ?int $navigationSort = 6;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Envelope;

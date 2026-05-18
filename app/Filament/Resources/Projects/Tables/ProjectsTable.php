@@ -3,10 +3,11 @@
 namespace App\Filament\Resources\Projects\Tables;
 
 use App\Models\Project;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -19,52 +20,24 @@ class ProjectsTable
     {
         return $table
             ->columns([
-                TextColumn::make('order')
-                    ->label('#')
-                    ->sortable()
-                    ->alignCenter()
-                    ->width(50),
-
-                ToggleColumn::make('is_posted')
-                    ->label('Posted')
-                    ->sortable(),
-
                 TextColumn::make('title')
-                    ->label('Project Title')
+                    ->label('Project')
                     ->searchable()
                     ->sortable()
                     ->weight(FontWeight::Bold)
+                    ->description(fn ($record) => $record->role ?: $record->project_type)
                     ->wrap(),
-
-                TextColumn::make('role')
-                    ->label('Role')
-                    ->sortable()
-                    ->wrap()
-                    ->toggleable(),
-
-                TextColumn::make('description')
-                    ->label('Description')
-                    ->limit(50)
-                    ->searchable()
-                    ->wrap()
-                    ->toggleable()
-                    ->tooltip(function (TextColumn $column): ?string {
-                        $state = $column->getState();
-
-                        if (strlen($state) <= 50) {
-                            return null;
-                        }
-
-                        return $state;
-                    }),
 
                 TextColumn::make('tech_stack')
-                    ->label('Tech Stack')
+                    ->label('Stack')
                     ->badge()
                     ->separator(',')
-                    ->limit(3)
-                    ->searchable()
                     ->wrap(),
+
+                TextColumn::make('started_at')
+                    ->label('Year')
+                    ->date('Y')
+                    ->color('gray'),
 
                 IconColumn::make('is_featured')
                     ->label('Featured')
@@ -73,39 +46,34 @@ class ProjectsTable
                     ->falseIcon('heroicon-o-star')
                     ->trueColor('warning')
                     ->falseColor('gray')
-                    ->sortable()
                     ->alignCenter(),
 
+                ToggleColumn::make('is_posted')
+                    ->label('Live'),
+
                 TextColumn::make('live_url')
-                    ->label('Live')
+                    ->label('Link')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->url(fn ($record) => $record->live_url)
                     ->openUrlInNewTab()
-                    ->color('success')
-                    ->formatStateUsing(fn ($state) => $state ? 'Demo' : '-')
-                    ->alignCenter()
-                    ->toggleable(),
-
-                TextColumn::make('updated_at')
-                    ->label('Last Updated')
-                    ->dateTime('M j, Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->color('primary')
+                    ->formatStateUsing(fn ($state) => $state ? 'View' : '—')
+                    ->alignCenter(),
             ])
-            ->defaultSort('order', 'asc')
-
+            ->defaultSort('order')
+            ->reorderable('order')
             ->filters([
                 TernaryFilter::make('is_featured')
-                    ->label('Featured Projects')
-                    ->placeholder('All projects')
+                    ->label('Featured')
+                    ->placeholder('All')
                     ->trueLabel('Featured only')
                     ->falseLabel('Not featured'),
 
                 TernaryFilter::make('is_posted')
-                    ->label('Active Status')
-                    ->placeholder('All projects')
-                    ->trueLabel('Active only')
-                    ->falseLabel('Inactive only'),
+                    ->label('Live')
+                    ->placeholder('All')
+                    ->trueLabel('Live only')
+                    ->falseLabel('Hidden only'),
 
                 SelectFilter::make('tech_stack')
                     ->label('Technology')
@@ -120,6 +88,14 @@ class ProjectsTable
                             ->mapWithKeys(fn ($tech) => [$tech => $tech]);
                     })
                     ->searchable(),
+            ])
+            ->recordActions([
+                EditAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
             ]);
     }
 }

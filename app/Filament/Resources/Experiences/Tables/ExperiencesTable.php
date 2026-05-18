@@ -5,8 +5,7 @@ namespace App\Filament\Resources\Experiences\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -22,15 +21,13 @@ class ExperiencesTable
                 TextColumn::make('title')
                     ->searchable()
                     ->sortable()
-                    ->weight('bold'),
-
-                TextColumn::make('company')
-                    ->searchable()
-                    ->sortable(),
+                    ->weight('bold')
+                    ->description(fn($record) => $record->company),
 
                 TextColumn::make('employment_type')
+                    ->label('Type')
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
+                    ->color(fn(?string $state): string => match ($state) {
                         'full-time' => 'success',
                         'part-time' => 'info',
                         'contract' => 'warning',
@@ -41,18 +38,28 @@ class ExperiencesTable
 
                 TextColumn::make('period_label')
                     ->label('Period')
-                    ->getStateUsing(fn ($record) => $record->period_label),
-
-                TextColumn::make('duration')
-                    ->getStateUsing(fn ($record) => $record->duration)
+                    ->getStateUsing(fn($record) => $record->period_label)
+                    ->description(fn($record) => $record->duration)
                     ->color('gray'),
 
+                IconColumn::make('is_current')
+                    ->label('Current')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('')
+                    ->trueColor('success')
+                    ->alignCenter(),
+
                 ToggleColumn::make('is_active')
-                    ->label('Active'),
+                    ->label('Visible'),
 
                 TextColumn::make('order')
-                    ->sortable(),
+                    ->sortable()
+                    ->alignCenter()
+                    ->width(60),
             ])
+            ->defaultSort('order')
+            ->reorderable('order')
             ->filters([
                 SelectFilter::make('employment_type')
                     ->options([
@@ -62,9 +69,10 @@ class ExperiencesTable
                         'freelance' => 'Freelance',
                         'internship' => 'Internship',
                     ]),
-                TernaryFilter::make('is_active'),
+                TernaryFilter::make('is_active')
+                    ->label('Visible'),
                 TernaryFilter::make('is_current')
-                    ->label('Current Position'),
+                    ->label('Current position'),
             ])
             ->recordActions([
                 EditAction::make(),

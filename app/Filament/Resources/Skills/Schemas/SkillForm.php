@@ -16,21 +16,13 @@ class SkillForm
     {
         return $schema
             ->components([
-                Section::make('Skill Details')
+                Section::make('Skill')
+                    ->columnSpan(1)
                     ->schema([
                         TextInput::make('name')
                             ->required()
                             ->maxLength(255)
                             ->placeholder('Laravel'),
-
-                        TextInput::make('url')
-                            ->url()
-                            ->placeholder('https://laravel.com')
-                            ->helperText('Link to official website'),
-
-                        TextInput::make('icon')
-                            ->placeholder('devicon-laravel-plain')
-                            ->helperText('Devicon class - find icons at devicon.dev'),
 
                         Select::make('category')
                             ->options([
@@ -45,37 +37,41 @@ class SkillForm
                                 'other' => 'Other',
                             ])
                             ->required()
-                            ->default('other'),
-                    ])
-                    ->columns(2),
+                            ->default('other')
+                            ->native(false),
 
-                Section::make('Display Settings')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextInput::make('order')
-                                    ->numeric()
-                                    ->default(0),
+                        FileUpload::make('logo')
+                            ->label('Custom logo (optional)')
+                            ->image()
+                            ->directory('skill-logos')
+                            ->nullable()
+                            ->helperText('Takes priority over devicon icon')
+                            ->columnSpanFull(),
 
-                                Toggle::make('is_active')
-                                    ->label('Active')
-                                    ->default(true)
-                                    ->helperText('Show in marquee'),
-                            ]),
+                        TextInput::make('icon')
+                            ->placeholder('devicon-laravel-plain')
+                            ->helperText('Find icons at devicon.dev — used if no logo uploaded')
+                            ->columnSpanFull(),
+
+                        TextInput::make('url')
+                            ->url()
+                            ->placeholder('https://laravel.com')
+                            ->helperText('Official website')
+                            ->columnSpanFull(),
                     ]),
 
-                Section::make('Display Settings')
+                Section::make('Display')
+                    ->columnSpan(1)
                     ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextInput::make('order')
-                                    ->numeric()
-                                    ->default(0),
+                        Toggle::make('is_active')
+                            ->label('Show in marquee')
+                            ->default(true)
+                            ->inline(false),
 
-                                Toggle::make('is_active')
-                                    ->label('Active')
-                                    ->default(true),
-                            ]),
+                        TextInput::make('order')
+                            ->numeric()
+                            ->default(0)
+                            ->helperText('Lower = shown first'),
                     ]),
             ]);
     }
