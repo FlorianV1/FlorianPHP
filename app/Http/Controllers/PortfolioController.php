@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Profile;
-use App\Models\NowItem;
-use App\Models\Project;
+use App\Mail\ContactNotification;
+use App\Models\ContactMessage;
 use App\Models\Experience;
-use App\Models\Skill;
+use App\Models\NowItem;
+use App\Models\Profile;
+use App\Models\Project;
 use App\Models\Settings;
+use App\Models\Skill;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class PortfolioController extends Controller
 {
@@ -72,12 +75,19 @@ class PortfolioController extends Controller
 
     public function submitContact(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name'    => 'required|string|max:255',
-            'email'   => 'required|email',
-            'message' => 'required|string',
+            'email'   => 'required|email|max:255',
+            'message' => 'required|string|max:5000',
         ]);
 
-        return redirect()->back()->with('success', 'Message sent!');
+        $contactMessage = ContactMessage::create($validated);
+
+        $profile = Profile::first();
+        if ($profile && $profile->email) {
+            Mail::to($profile->email)->send(new ContactNotification($contactMessage));
+        }
+
+        return redirect()->back()->with('contact_success', true);
     }
 }

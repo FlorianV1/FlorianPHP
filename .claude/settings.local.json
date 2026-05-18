@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path . -Force)",
+      "Bash(Select-Object Name)",
+      "Bash(git *)",
+      "Read(//mnt/c/Users/Florian/Herd/**)",
+      "Bash(php artisan *)"
+    ]
+  }
+}
