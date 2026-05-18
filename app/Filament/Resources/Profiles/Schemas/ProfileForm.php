@@ -15,6 +15,7 @@ class ProfileForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Basic Information')
                     ->description('Your primary profile information displayed on the site')
@@ -31,6 +32,19 @@ class ProfileForm
                             ->placeholder('Software Developer')
                             ->helperText('Your current primary professional title.'),
 
+                        TextInput::make('email')
+                            ->email()
+                            ->required()
+                            ->maxLength(255)
+                            ->placeholder('dev@example.com')
+                            ->helperText('The public email address for contact.'),
+
+                        TextInput::make('location')
+                            ->maxLength(255)
+                            ->placeholder('Dongen, Netherlands')
+                            ->helperText('Your city and country, shown publicly on your portfolio.')
+                            ->prefixIcon('heroicon-o-map-pin'),
+
                         Textarea::make('tagline')
                             ->required()
                             ->rows(2)
@@ -44,13 +58,6 @@ class ProfileForm
                             ->placeholder('Currently working on modern PHP/Laravel stacks...')
                             ->helperText('Brief secondary context or a list of current technologies.')
                             ->columnSpanFull(),
-
-                        TextInput::make('email')
-                            ->email()
-                            ->required()
-                            ->maxLength(255)
-                            ->placeholder('dev@example.com')
-                            ->helperText('The public email address for contact.'),
                     ])
                     ->columns(2)
                     ->collapsible(),
@@ -72,7 +79,7 @@ class ProfileForm
                             ->placeholder('Available for freelance opportunities')
                             ->helperText('A short, specific message regarding your availability status.'),
                     ])
-                    ->columns(1)
+                    ->columns(2)
                     ->collapsible(),
 
                 Section::make('About Section')
@@ -92,7 +99,6 @@ class ProfileForm
                             ->helperText('Detailed professional biography. Use formatting for better readability.')
                             ->columnSpanFull(),
                     ])
-                    ->columns(1)
                     ->collapsible(),
 
                 Section::make('Social Links')
@@ -119,7 +125,6 @@ class ProfileForm
                             ->itemLabel(fn (array $state): ?string => $state['platform'] ?? null)
                             ->columnSpanFull(),
                     ])
-                    ->columns(1)
                     ->collapsible(),
             ]);
     }

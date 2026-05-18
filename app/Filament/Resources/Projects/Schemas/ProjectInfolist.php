@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Projects\Schemas;
 
 use Filament\Schemas\Schema;
 
-class Projectinfolist
+class ProjectInfolist
 {
     public static function configure(Schema $schema): Schema
     {
