@@ -14,7 +14,7 @@ class Settings extends Model
 
     private static ?array $loaded = null;
 
-    private static function load(): array
+    private static function loadAll(): array
     {
         if (static::$loaded === null) {
             static::$loaded = static::all()->pluck('value', 'key')->toArray();
@@ -25,7 +25,7 @@ class Settings extends Model
 
     public static function get($key, $default = null)
     {
-        return static::load()[$key] ?? $default;
+        return static::loadAll()[$key] ?? $default;
     }
 
     public static function set($key, $value)

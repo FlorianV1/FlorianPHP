@@ -10,6 +10,12 @@ class PageViewsOverview extends BaseWidget
 {
     protected function getStats(): array
     {
+        $topCountry = PageView::whereNotNull('country')
+            ->selectRaw('country, count(*) as total')
+            ->groupBy('country')
+            ->orderByDesc('total')
+            ->first();
+
         return [
             Stat::make('Total Views', PageView::count())
                 ->description('All time')
@@ -26,6 +32,10 @@ class PageViewsOverview extends BaseWidget
             Stat::make('Unique Visitors', PageView::distinct('ip')->count('ip'))
                 ->description('By IP address')
                 ->icon('heroicon-o-users'),
+
+            Stat::make('Top Country', $topCountry?->country ?? '—')
+                ->description($topCountry ? $topCountry->total . ' views' : 'No data yet')
+                ->icon('heroicon-o-globe-alt'),
         ];
     }
 }

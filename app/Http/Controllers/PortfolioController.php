@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ResolveCountry;
 use App\Mail\ContactNotification;
 use App\Models\ContactMessage;
 use App\Models\Experience;
 use App\Models\NowItem;
+use App\Models\PageView;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Models\Settings;
@@ -15,8 +17,10 @@ use Illuminate\Support\Facades\Mail;
 
 class PortfolioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $this->trackPageView($request);
+
         $profile     = Profile::first();
         $nowItems    = NowItem::active()->ordered()->get();
         $projects    = Project::ongoing()->ordered()->get();
@@ -71,6 +75,30 @@ class PortfolioController extends Controller
             'sectionsOrder'    => $sectionsOrder,
             'navbarLinks'      => $navbarLinks,
         ]);
+    }
+
+    private function trackPageView(Request $request): void
+    {
+        $ip = $request->ip();
+
+        // Skip private/local IPs and common bots
+        if (! $ip || ! filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+            return;
+        }
+
+        $ua = $request->userAgent() ?? '';
+        if (preg_match('/bot|crawl|spider|slurp|facebookexternalhit/i', $ua)) {
+            return;
+        }
+
+        $view = PageView::create([
+            'page'       => '/',
+            'ip'         => $ip,
+            'user_agent' => substr($ua, 0, 255),
+            'referrer'   => $request->header('referer'),
+        ]);
+
+        ResolveCountry::dispatch($view->id);
     }
 
     public function submitContact(Request $request)
