@@ -54,7 +54,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=JetBrains+Mono:wght@300;400;500;600&display=swap"
         rel="stylesheet"
     >
 
@@ -93,22 +93,17 @@
             --text-primary: {{ $colors['text_primary'] }};
             --text-secondary: {{ $colors['text_secondary'] }};
             --text-muted: {{ $colors['text_muted'] }};
+            --bg: {{ $colors['app_bg'] }};
+            --bg2: {{ $colors['surface'] }};
         }
+
+        *, *::before, *::after { box-sizing: border-box; }
 
         body {
             background-color: var(--app-bg);
-            color: var(--text-primary);
+            color: #f1f5f9;
             font-family: 'JetBrains Mono', monospace;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease-out forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; transform: translateY(0); }
+            margin: 0;
         }
     </style>
 </head>
@@ -125,7 +120,7 @@
 />
 
 {{-- DYNAMIC SECTIONS VIA COMPONENTS --}}
-<main class="pt-24">
+<main>
     @foreach($sectionsOrder ?? [] as $section)
         @php
             $key = $section['section'] ?? null;

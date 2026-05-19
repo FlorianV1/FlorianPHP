@@ -1,62 +1,71 @@
 @props(['skills'])
 
 @if($skills->count() > 0)
-    <section id="skills" class="py-16 bg-surface overflow-hidden">
-        <div class="max-w-6xl mx-auto px-6 mb-8">
-            <h2 class="text-3xl font-bold text-text-primary">Technologies I Work With</h2>
+@php
+    $skillEmojis = ['PHP'=>'⚡','Laravel'=>'🌿','MySQL'=>'🗄','Redis'=>'🔴','Docker'=>'🐳','Vue.js'=>'🔵','Vue'=>'🔵','Git'=>'🐙','Linux'=>'🐧','Node.js'=>'🟢','Python'=>'🐍','TypeScript'=>'📘','JavaScript'=>'📜','React'=>'⚛'];
+@endphp
+<section id="skills" style="background:#111114;padding:5rem 0 0;">
+    <div style="max-width:1152px;margin:0 auto;padding:0 2.5rem;margin-bottom:2.5rem;">
+        <div style="display:flex;align-items:baseline;gap:0.75rem;">
+            <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,5vw,56px);letter-spacing:-0.03em;margin:0;color:#f1f5f9;">Technologies</h2>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.18);margin-bottom:6px;letter-spacing:0.04em;">/ stack</span>
         </div>
+    </div>
 
-        <div class="relative">
-            <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-surface to-transparent z-10"></div>
-            <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-surface to-transparent z-10"></div>
-
-            <div class="flex marquee-container">
-                <div class="flex items-center gap-12 marquee-content">
-                    @foreach($skills as $skill)
-                        <a href="{{ $skill->url ?? '#' }}" target="_blank" rel="noopener noreferrer" class="flex-shrink-0 flex flex-col items-center gap-2 group" title="{{ $skill->name }}">
-                            @if($skill->logo)
-                                <img src="{{ asset('storage/' . $skill->logo) }}" alt="{{ $skill->name }}" class="h-10 w-10 object-contain opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-300">
-                            @elseif($skill->icon)
-                                <i class="{{ $skill->icon }} text-4xl opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-300"></i>
-                            @else
-                                <span class="text-text-muted group-hover:text-accent transition-colors text-sm font-medium">{{ $skill->name }}</span>
-                            @endif
-                            <span class="text-xs text-text-muted group-hover:text-accent transition-colors opacity-0 group-hover:opacity-100">{{ $skill->name }}</span>
-                        </a>
-                    @endforeach
-                </div>
-
-                <div class="flex items-center gap-12 marquee-content">
-                    @foreach($skills as $skill)
-                        <a href="{{ $skill->url ?? '#' }}" target="_blank" rel="noopener noreferrer" class="flex-shrink-0 flex flex-col items-center gap-2 group" title="{{ $skill->name }}">
-                            @if($skill->logo)
-                                <img src="{{ asset('storage/' . $skill->logo) }}" alt="{{ $skill->name }}" class="h-10 w-10 object-contain opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-300">
-                            @elseif($skill->icon)
-                                <i class="{{ $skill->icon }} text-4xl opacity-60 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-300"></i>
-                            @else
-                                <span class="text-text-muted group-hover:text-accent transition-colors text-sm font-medium">{{ $skill->name }}</span>
-                            @endif
-                            <span class="text-xs text-text-muted group-hover:text-accent transition-colors opacity-0 group-hover:opacity-100">{{ $skill->name }}</span>
-                        </a>
-                    @endforeach
-                </div>
+    {{-- Full-bleed marquee --}}
+    <div style="overflow:hidden;border-top:1px solid rgba(255,255,255,0.07);border-bottom:1px solid rgba(255,255,255,0.07);">
+        <div class="skills-track" style="display:flex;white-space:nowrap;">
+            {{-- First copy --}}
+            <div style="display:inline-flex;flex-shrink:0;">
+                @foreach($skills as $skill)
+                    @php
+                        $emoji = $skillEmojis[$skill->name] ?? '·';
+                    @endphp
+                    <span class="skill-item"
+                          style="display:inline-flex;align-items:center;gap:8px;padding:1rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.04em;color:rgba(255,255,255,0.5);border-right:1px solid rgba(255,255,255,0.07);transition:color 0.2s;cursor:default;white-space:nowrap;"
+                          onmouseover="this.style.color='rgba(255,255,255,1)'"
+                          onmouseout="this.style.color='rgba(255,255,255,0.5)'">
+                        <span style="font-size:15px;">{{ $emoji }}</span>
+                        {{ $skill->name }}
+                    </span>
+                @endforeach
+            </div>
+            {{-- Second copy (seamless loop) --}}
+            <div style="display:inline-flex;flex-shrink:0;" aria-hidden="true">
+                @foreach($skills as $skill)
+                    @php
+                        $emoji = $skillEmojis[$skill->name] ?? '·';
+                    @endphp
+                    <span class="skill-item"
+                          style="display:inline-flex;align-items:center;gap:8px;padding:1rem 1.5rem;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.04em;color:rgba(255,255,255,0.5);border-right:1px solid rgba(255,255,255,0.07);transition:color 0.2s;cursor:default;white-space:nowrap;"
+                          onmouseover="this.style.color='rgba(255,255,255,1)'"
+                          onmouseout="this.style.color='rgba(255,255,255,0.5)'">
+                        <span style="font-size:15px;">{{ $emoji }}</span>
+                        {{ $skill->name }}
+                    </span>
+                @endforeach
             </div>
         </div>
-    </section>
+    </div>
 
-    <style>
-        .marquee-container {
-            animation: marquee 30s linear infinite;
-        }
-        .marquee-container:hover {
-            animation-play-state: paused;
-        }
-        .marquee-content {
-            padding-right: 3rem;
-        }
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-    </style>
+    <div style="padding-bottom:5rem;"></div>
+</section>
+
+{{-- Wave: technologies (#111114) → about (#0b0b0d) --}}
+<svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;height:80px;margin-top:-1px;background:#111114;">
+    <path d="M0,30 C160,75 320,5 480,45 C640,80 800,10 960,50 C1120,80 1300,15 1440,40 L1440,80 L0,80 Z" fill="#0b0b0d"/>
+</svg>
+
+<style>
+    .skills-track {
+        animation: skillsScroll 30s linear infinite;
+    }
+    .skills-track:hover {
+        animation-play-state: paused;
+    }
+    @keyframes skillsScroll {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+</style>
 @endif

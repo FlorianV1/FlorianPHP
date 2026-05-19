@@ -1,118 +1,74 @@
 @props(['experiences'])
 
 @if($experiences->count() > 0)
-    <section id="experience" class="py-24 px-6">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl font-bold mb-12 text-text-primary">Experience</h2>
+<section id="experience" style="background:#0b0b0d;padding:5rem 0 6rem;">
+    <div style="max-width:1152px;margin:0 auto;padding:0 2.5rem;">
 
-            <div class="relative">
-                {{-- Timeline line --}}
-                <div class="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-accent via-accent/50 to-transparent"></div>
-
-                <div class="space-y-12">
-                    @foreach($experiences as $experience)
-                        <div class="relative pl-16">
-                            {{-- Timeline dot --}}
-                            <div class="absolute left-4 top-2 w-4 h-4 rounded-full border-2 border-accent bg-app-bg {{ $experience->is_current ? 'animate-pulse' : '' }}">
-                                @if($experience->is_current)
-                                    <div class="absolute inset-1 rounded-full bg-accent"></div>
-                                @endif
-                            </div>
-
-                            {{-- Card --}}
-                            <div class="bg-surface border border-white/5 rounded-xl p-6 hover:border-accent/20 transition-all duration-300 group">
-                                {{-- Header --}}
-                                <div class="flex items-start justify-between gap-4 mb-4">
-                                    {{-- Left: text info --}}
-                                    <div class="flex-1 min-w-0">
-                                        <h3 class="text-lg font-semibold text-text-primary group-hover:text-accent transition-colors">
-                                            {{ $experience->title }}
-                                        </h3>
-
-                                        <div class="flex flex-wrap items-center gap-2 mt-1">
-                                            @if($experience->company_url)
-                                                <a href="{{ $experience->company_url }}" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-accent transition-colors">
-                                                    {{ $experience->company }}
-                                                </a>
-                                            @else
-                                                <span class="text-text-secondary">{{ $experience->company }}</span>
-                                            @endif
-
-                                            @if($experience->employment_type)
-                                                <span class="text-text-muted">•</span>
-                                                <span class="text-sm text-text-muted capitalize">{{ str_replace('-', ' ', $experience->employment_type) }}</span>
-                                            @endif
-                                        </div>
-
-                                        <div class="flex flex-wrap items-center gap-2 mt-2 text-sm text-text-muted">
-                                            <span>{{ $experience->period_label }}</span>
-                                            @if($experience->duration)
-                                                <span>•</span>
-                                                <span>{{ $experience->duration }}</span>
-                                            @endif
-                                        </div>
-
-                                        @if($experience->location)
-                                            <div class="flex items-center gap-1 mt-1 text-sm text-text-muted">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                </svg>
-                                                <span>{{ $experience->location }}</span>
-                                            </div>
-                                        @endif
-                                    </div>
-
-                                    {{-- Right: logo + current badge --}}
-                                    <div class="flex flex-col items-end gap-2 flex-shrink-0">
-                                        @if($experience->company_logo)
-                                            <img src="{{ asset('storage/' . $experience->company_logo) }}"
-                                                 alt="{{ $experience->company }}"
-                                                 class="w-12 h-12 object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300">
-                                        @endif
-
-                                        @if($experience->is_current)
-                                            <span class="px-2 py-1 text-xs font-medium bg-success/20 text-success rounded-full">
-                                                Current
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-
-                                {{-- Description --}}
-                                @if($experience->description)
-                                    <p class="text-text-secondary text-sm mb-4 leading-relaxed">
-                                        {{ $experience->description }}
-                                    </p>
-                                @endif
-
-                                {{-- Responsibilities --}}
-                                @if($experience->responsibilities && count($experience->responsibilities) > 0)
-                                    <ul class="space-y-2 mb-4">
-                                        @foreach($experience->responsibilities as $responsibility)
-                                            <li class="flex items-start gap-2 text-sm text-text-secondary">
-                                                <span class="text-accent mt-1.5">›</span>
-                                                <span>{{ is_array($responsibility) ? $responsibility['responsibility'] : $responsibility }}</span>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-
-                                {{-- Skills --}}
-                                @if($experience->skills && count($experience->skills) > 0)
-                                    <div class="flex flex-wrap gap-2 pt-4 border-t border-white/5">
-                                        @foreach($experience->skills as $skill)
-                                            <span class="px-2 py-1 text-xs bg-accent/10 text-accent rounded-md">
-                                                {{ $skill }}
-                                            </span>
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
+        {{-- Heading --}}
+        <div style="display:flex;align-items:baseline;gap:0.75rem;margin-bottom:3.5rem;">
+            <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,5vw,56px);letter-spacing:-0.03em;margin:0;color:#f1f5f9;">Experience</h2>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.18);margin-bottom:6px;letter-spacing:0.04em;">/ 02</span>
         </div>
-    </section>
+
+        <div style="display:flex;flex-direction:column;gap:0;">
+            @foreach($experiences as $experience)
+                <div style="display:grid;grid-template-columns:200px 1fr;gap:3rem;padding:2.5rem 0;{{ !$loop->last ? 'border-bottom:1px solid rgba(255,255,255,0.06);' : '' }}">
+
+                    {{-- Left: date, company, meta --}}
+                    <div>
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.06em;margin-bottom:0.6rem;line-height:1.6;">
+                            {{ $experience->period_label }}
+                        </div>
+                        <div style="font-family:'Syne',sans-serif;font-weight:600;font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:0.35rem;">
+                            {{ $experience->company }}
+                        </div>
+                        @if($experience->employment_type || $experience->location)
+                            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.25);margin-bottom:0.75rem;line-height:1.6;">
+                                {{ $experience->employment_type ? str_replace('-', ' ', $experience->employment_type) : '' }}
+                                {{ ($experience->employment_type && $experience->location) ? ' · ' : '' }}
+                                {{ $experience->location ?? '' }}
+                            </div>
+                        @endif
+                        @if($experience->is_current)
+                            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;background:rgba(134,239,172,0.12);border:1px solid rgba(134,239,172,0.2);border-radius:9999px;color:#86efac;letter-spacing:0.04em;">Current</span>
+                        @endif
+                    </div>
+
+                    {{-- Right: title, description, bullets, skills --}}
+                    <div>
+                        <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;letter-spacing:-0.02em;color:#f1f5f9;margin:0 0 0.75rem;">{{ $experience->title }}</h3>
+
+                        @if($experience->description)
+                            <p style="font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,0.45);line-height:1.75;margin:0 0 1rem;">{{ $experience->description }}</p>
+                        @endif
+
+                        @if($experience->responsibilities && count($experience->responsibilities) > 0)
+                            <ul style="list-style:none;margin:0 0 1.25rem;padding:0;">
+                                @foreach($experience->responsibilities as $responsibility)
+                                    <li style="position:relative;padding-left:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.4);line-height:1.75;margin-bottom:0.2rem;">
+                                        <span style="position:absolute;left:0;color:rgba(255,255,255,0.4);">›</span>
+                                        {{ is_array($responsibility) ? $responsibility['responsibility'] : $responsibility }}
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+
+                        @if($experience->skills && count($experience->skills) > 0)
+                            <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+                                @foreach($experience->skills as $skill)
+                                    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.04em;padding:2px 8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:9999px;color:rgba(255,255,255,0.45);">{{ $skill }}</span>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- Wave: experience (#0b0b0d) → technologies (#111114) --}}
+<svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;height:80px;margin-top:-1px;background:#0b0b0d;">
+    <path d="M0,55 C120,10 300,70 480,30 C660,0 840,65 1020,35 C1200,10 1340,60 1440,40 L1440,80 L0,80 Z" fill="#111114"/>
+</svg>
 @endif

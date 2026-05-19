@@ -8,7 +8,8 @@
       "Bash(php artisan *)",
       "PowerShell(cd \"C:\\\\Users\\\\Florian\\\\Herd\\\\florianphp\"; php -r \"require 'vendor/autoload.php'; \\\\$app = require 'bootstrap/app.php'; \\\\$app->make\\('Illuminate\\\\Contracts\\\\Console\\\\Kernel'\\)->bootstrap\\(\\); \\\\$v = App\\\\Models\\\\Settings::get\\('theme', 'default'\\); echo \\\\$v; echo PHP_EOL; \\\\$v2 = App\\\\Models\\\\Settings::get\\('overlay', 'none'\\); echo \\\\$v2; echo PHP_EOL;\" 2>&1)",
       "Bash(Get-ChildItem *)",
-      "Bash(Get-Content *)"
+      "Bash(Get-Content *)",
+      "Bash(composer show *)"
     ]
   }
 }

@@ -1,17 +1,20 @@
 @props(['items'])
 
 @if($items->count() > 0)
-    <section id="now" class="pt-4 pb-20 px-6">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl font-bold mb-8 text-text-primary">What I'm focused on now</h2>
-            <div class="grid gap-3">
-                @foreach($items as $item)
-                    <div class="flex gap-4 px-5 py-4 bg-surface border border-white/5 rounded-xl hover:border-accent/20 transition-colors group">
-                        <span class="text-accent mt-0.5 flex-shrink-0 group-hover:translate-x-0.5 transition-transform">→</span>
-                        <p class="text-text-secondary">{{ $item->description }}</p>
-                    </div>
-                @endforeach
-            </div>
+<section id="now" style="background:#0b0b0d;padding:4rem 0 5rem;">
+    <div style="max-width:1152px;margin:0 auto;padding:0 2.5rem;">
+        <div style="display:flex;align-items:baseline;gap:0.75rem;margin-bottom:2rem;">
+            <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(28px,4vw,44px);letter-spacing:-0.03em;margin:0;color:#f1f5f9;">Now</h2>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.18);margin-bottom:4px;letter-spacing:0.04em;">/ current focus</span>
         </div>
-    </section>
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            @foreach($items as $item)
+                <div style="display:flex;gap:1rem;padding:1rem 1.25rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;">
+                    <span style="color:rgba(255,255,255,0.3);flex-shrink:0;margin-top:1px;">→</span>
+                    <p style="font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,0.5);line-height:1.65;margin:0;">{{ $item->description }}</p>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</section>
 @endif

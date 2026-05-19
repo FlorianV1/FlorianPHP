@@ -6,117 +6,95 @@
 @php
     use App\Models\Settings;
 
-    $brandText  = Settings::get('navbar_brand_text', $profile->name ?? 'florian.dev');
-    $brandColor = Settings::get('navbar_brand_color', '#ffffff');
+    $brandText = Settings::get('navbar_brand_text', $profile->name ?? 'florian.dev');
 
     $links = collect($navbarLinks ?: Settings::get('navbar_links', []))
         ->filter(fn ($link) => ($link['enabled'] ?? true))
         ->values();
 @endphp
 
-<nav class="fixed top-0 w-full z-50 border-b border-white/5 bg-app-bg/80 backdrop-blur-md">
-    <div class="max-w-6xl mx-auto px-6 py-4">
-        {{-- Desktop: 3-column grid --}}
-        <div class="hidden md:grid grid-cols-3 items-center">
-            {{-- Left: brand --}}
-            <a href="#top" class="font-mono text-sm text-white/40 hover:text-white/70 transition-colors tracking-tight">
-                ~/{{ $brandText }}
-            </a>
+<style>
+    @keyframes navDotPulse {
+        0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(134,239,172,0); }
+        50%       { opacity: 0.7; box-shadow: 0 0 0 5px rgba(134,239,172,0.12); }
+    }
+    .nav-dot { animation: navDotPulse 2.5s ease-in-out infinite; }
+    .nav-link {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        color: rgba(255,255,255,0.45);
+        text-decoration: none;
+        letter-spacing: 0.06em;
+        transition: color 0.2s;
+    }
+    .nav-link:hover { color: rgba(255,255,255,1); }
+</style>
 
-            {{-- Center: nav links --}}
-            <div class="flex justify-center gap-8">
-                @foreach($links as $link)
-                    <a href="{{ $link['url'] ?? '#' }}"
-                       class="font-mono text-sm text-white/35 hover:text-white/75 transition-colors tracking-tight">
-                        {{ strtolower($link['label'] ?? '') }}
-                    </a>
-                @endforeach
-            </div>
+<nav style="position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(11,11,13,0.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.07);">
+    <div style="max-width:1152px;margin:0 auto;padding:0 2.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;">
 
-            {{-- Right: availability pill --}}
-            <div class="flex justify-end">
-                @if($profile && $profile->status_available)
-                    <div class="flex items-center gap-2 px-3 py-1.5 border border-white/10 rounded-full">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
-                        <span class="font-mono text-xs text-white/40">{{ $profile->status_text ?? 'available for projects' }}</span>
-                    </div>
-                @endif
-            </div>
+        {{-- Left: brand --}}
+        <a href="#top" style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#f1f5f9;text-decoration:none;letter-spacing:-0.01em;">
+            <span style="opacity:0.2;">~/</span>{{ $brandText }}
+        </a>
+
+        {{-- Center: nav links --}}
+        <div class="hidden md:flex" style="gap:2.25rem;">
+            @foreach($links as $link)
+                <a href="{{ $link['url'] ?? '#' }}" class="nav-link">{{ strtolower($link['label'] ?? '') }}</a>
+            @endforeach
         </div>
 
-        {{-- Mobile: brand + hamburger --}}
-        <div class="flex md:hidden justify-between items-center">
-            <a href="#top" class="font-mono text-sm text-white/40">
-                ~/{{ $brandText }}
-            </a>
-
-            <button
-                id="mobile-menu-toggle"
-                class="flex flex-col gap-1.5 p-1 text-white/40 hover:text-white/70 transition-colors"
-                aria-label="Open menu"
-                aria-expanded="false"
-            >
-                <span class="block w-5 h-px bg-current transition-all duration-300" id="bar1"></span>
-                <span class="block w-5 h-px bg-current transition-all duration-300" id="bar2"></span>
-                <span class="block w-5 h-px bg-current transition-all duration-300" id="bar3"></span>
-            </button>
+        {{-- Right: availability pill --}}
+        <div class="hidden md:block">
+            @if($profile && $profile->status_available)
+                <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid rgba(255,255,255,0.12);border-radius:4px;">
+                    <span class="nav-dot" style="width:7px;height:7px;border-radius:50%;background:#86efac;flex-shrink:0;display:inline-block;"></span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.02em;">{{ $profile->status_text ?? 'available for projects' }}</span>
+                </div>
+            @endif
         </div>
+
+        {{-- Mobile hamburger --}}
+        <button id="nav-toggle" class="md:hidden" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;flex-direction:column;gap:5px;" aria-label="Open menu">
+            <span id="nbar1" style="display:block;width:20px;height:1px;background:rgba(255,255,255,0.4);transition:all 0.3s;"></span>
+            <span id="nbar2" style="display:block;width:20px;height:1px;background:rgba(255,255,255,0.4);transition:all 0.3s;"></span>
+            <span id="nbar3" style="display:block;width:20px;height:1px;background:rgba(255,255,255,0.4);transition:all 0.3s;"></span>
+        </button>
     </div>
 
     {{-- Mobile menu --}}
-    <div
-        id="mobile-menu"
-        class="md:hidden hidden flex-col border-t border-white/5 bg-app-bg/95 backdrop-blur-sm px-6 py-5 gap-5"
-    >
+    <div id="nav-mobile" style="display:none;flex-direction:column;padding:1.25rem 2.5rem;gap:1.25rem;border-top:1px solid rgba(255,255,255,0.07);background:rgba(11,11,13,0.98);">
         @foreach($links as $link)
-            <a href="{{ $link['url'] ?? '#' }}"
-               class="mobile-menu-link font-mono text-sm text-white/40 hover:text-white/70 transition-colors py-1">
-                {{ strtolower($link['label'] ?? '') }}
-            </a>
+            <a href="{{ $link['url'] ?? '#' }}" class="nav-link mobile-nav-link" style="font-size:13px;">{{ strtolower($link['label'] ?? '') }}</a>
         @endforeach
-
         @if($profile && $profile->status_available)
-            <div class="flex items-center gap-2 pt-4 border-t border-white/5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse flex-shrink-0"></span>
-                <span class="font-mono text-xs text-white/35">{{ $profile->status_text ?? 'available for projects' }}</span>
+            <div style="display:flex;align-items:center;gap:8px;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.07);">
+                <span class="nav-dot" style="width:7px;height:7px;border-radius:50%;background:#86efac;display:inline-block;"></span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);">{{ $profile->status_text ?? 'available for projects' }}</span>
             </div>
         @endif
     </div>
 </nav>
 
 <script>
-    (function () {
-        const toggle = document.getElementById('mobile-menu-toggle');
-        const menu   = document.getElementById('mobile-menu');
-        const bar1   = document.getElementById('bar1');
-        const bar2   = document.getElementById('bar2');
-        const bar3   = document.getElementById('bar3');
+(function () {
+    const toggle = document.getElementById('nav-toggle');
+    const menu   = document.getElementById('nav-mobile');
+    const b1 = document.getElementById('nbar1');
+    const b2 = document.getElementById('nbar2');
+    const b3 = document.getElementById('nbar3');
+    let open = false;
 
-        let open = false;
+    function setOpen(v) {
+        open = v;
+        menu.style.display = open ? 'flex' : 'none';
+        b1.style.transform = open ? 'translateY(6px) rotate(45deg)' : '';
+        b2.style.opacity   = open ? '0' : '1';
+        b3.style.transform = open ? 'translateY(-6px) rotate(-45deg)' : '';
+    }
 
-        function setOpen(val) {
-            open = val;
-            toggle.setAttribute('aria-expanded', String(open));
-
-            if (open) {
-                menu.classList.remove('hidden');
-                menu.classList.add('flex');
-                bar1.style.transform = 'translateY(6px) rotate(45deg)';
-                bar2.style.opacity   = '0';
-                bar3.style.transform = 'translateY(-6px) rotate(-45deg)';
-            } else {
-                menu.classList.add('hidden');
-                menu.classList.remove('flex');
-                bar1.style.transform = '';
-                bar2.style.opacity   = '1';
-                bar3.style.transform = '';
-            }
-        }
-
-        toggle.addEventListener('click', () => setOpen(!open));
-
-        document.querySelectorAll('.mobile-menu-link').forEach(link => {
-            link.addEventListener('click', () => setOpen(false));
-        });
-    })();
+    toggle.addEventListener('click', () => setOpen(!open));
+    document.querySelectorAll('.mobile-nav-link').forEach(l => l.addEventListener('click', () => setOpen(false)));
+})();
 </script>
