@@ -18,8 +18,8 @@
     $favicon = Settings::get('favicon');
 
     $colors = array_merge([
-        'app_bg'         => '#0E0E10',
-        'surface'        => '#111418',
+        'app_bg'         => '#0b0b0d',
+        'surface'        => '#111114',
         'accent'         => '#4A9FFF',
         'accent_hover'   => '#2D7CE8',
         'text_primary'   => '#E7EAF0',
@@ -54,7 +54,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet"
     >
 
@@ -75,8 +75,9 @@
                         error: '#E04F4F',
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['JetBrains Mono', 'monospace'],
                         mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Syne', 'sans-serif'],
                     },
                 }
             }
@@ -97,7 +98,7 @@
         body {
             background-color: var(--app-bg);
             color: var(--text-primary);
-            font-family: Inter, sans-serif;
+            font-family: 'JetBrains Mono', monospace;
         }
 
         .fade-in {
@@ -124,7 +125,7 @@
 />
 
 {{-- DYNAMIC SECTIONS VIA COMPONENTS --}}
-<main class="space-y-32 pb-16 pt-24">
+<main class="pt-24">
     @foreach($sectionsOrder ?? [] as $section)
         @php
             $key = $section['section'] ?? null;

@@ -23,13 +23,12 @@
                             <div class="bg-surface border border-white/5 rounded-xl p-6 hover:border-accent/20 transition-all duration-300 group">
                                 {{-- Header --}}
                                 <div class="flex items-start justify-between gap-4 mb-4">
+                                    {{-- Left: text info --}}
                                     <div class="flex-1 min-w-0">
-                                        {{-- Title --}}
                                         <h3 class="text-lg font-semibold text-text-primary group-hover:text-accent transition-colors">
                                             {{ $experience->title }}
                                         </h3>
 
-                                        {{-- Company & Type --}}
                                         <div class="flex flex-wrap items-center gap-2 mt-1">
                                             @if($experience->company_url)
                                                 <a href="{{ $experience->company_url }}" target="_blank" rel="noopener noreferrer" class="text-text-secondary hover:text-accent transition-colors">
@@ -45,7 +44,6 @@
                                             @endif
                                         </div>
 
-                                        {{-- Period & Duration --}}
                                         <div class="flex flex-wrap items-center gap-2 mt-2 text-sm text-text-muted">
                                             <span>{{ $experience->period_label }}</span>
                                             @if($experience->duration)
@@ -54,7 +52,6 @@
                                             @endif
                                         </div>
 
-                                        {{-- Location --}}
                                         @if($experience->location)
                                             <div class="flex items-center gap-1 mt-1 text-sm text-text-muted">
                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,12 +63,20 @@
                                         @endif
                                     </div>
 
-                                    {{-- Current badge --}}
-                                    @if($experience->is_current)
-                                        <span class="px-2 py-1 text-xs font-medium bg-success/20 text-success rounded-full">
-                                            Current
-                                        </span>
-                                    @endif
+                                    {{-- Right: logo + current badge --}}
+                                    <div class="flex flex-col items-end gap-2 flex-shrink-0">
+                                        @if($experience->company_logo)
+                                            <img src="{{ asset('storage/' . $experience->company_logo) }}"
+                                                 alt="{{ $experience->company }}"
+                                                 class="w-12 h-12 object-contain opacity-70 group-hover:opacity-100 transition-opacity duration-300">
+                                        @endif
+
+                                        @if($experience->is_current)
+                                            <span class="px-2 py-1 text-xs font-medium bg-success/20 text-success rounded-full">
+                                                Current
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
 
                                 {{-- Description --}}

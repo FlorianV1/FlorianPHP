@@ -64,10 +64,10 @@ class ProjectForm
 
                                                     Select::make('project_type')
                                                         ->options([
-                                                            'client'      => 'Client project',
-                                                            'internal'    => 'Internal tool',
+                                                            'client' => 'Client project',
+                                                            'internal' => 'Internal tool',
                                                             'open_source' => 'Open source',
-                                                            'product'     => 'Product / SaaS',
+                                                            'product' => 'Product / SaaS',
                                                         ])
                                                         ->native(false),
                                                 ]),
@@ -81,8 +81,8 @@ class ProjectForm
                                                     DatePicker::make('finished_at')
                                                         ->label('Finished At')
                                                         ->helperText('Leave empty if ongoing')
-                                                        ->disabled(fn ($get) => $get('is_ongoing'))
-                                                        ->hidden(fn ($get) => $get('is_ongoing')),
+                                                        ->disabled(fn($get) => $get('is_ongoing'))
+                                                        ->hidden(fn($get) => $get('is_ongoing')),
 
                                                     Toggle::make('is_ongoing')
                                                         ->label('Ongoing Project')
@@ -108,20 +108,20 @@ class ProjectForm
                                                 ->multiple()
                                                 ->searchable()
                                                 ->options([
-                                                    'php'        => 'PHP',
-                                                    'laravel'    => 'Laravel',
+                                                    'php' => 'PHP',
+                                                    'laravel' => 'Laravel',
                                                     'javascript' => 'JavaScript',
                                                     'typescript' => 'TypeScript',
-                                                    'vue'        => 'Vue',
-                                                    'react'      => 'React',
-                                                    'tailwind'   => 'Tailwind CSS',
-                                                    'alpine'     => 'Alpine.js',
-                                                    'mysql'      => 'MySQL',
-                                                    'postgres'   => 'PostgreSQL',
-                                                    'redis'      => 'Redis',
-                                                    'docker'     => 'Docker',
-                                                    'node'       => 'Node.js',
-                                                    'aws'        => 'AWS',
+                                                    'vue' => 'Vue',
+                                                    'react' => 'React',
+                                                    'tailwind' => 'Tailwind CSS',
+                                                    'alpine' => 'Alpine.js',
+                                                    'mysql' => 'MySQL',
+                                                    'postgres' => 'PostgreSQL',
+                                                    'redis' => 'Redis',
+                                                    'docker' => 'Docker',
+                                                    'node' => 'Node.js',
+                                                    'aws' => 'AWS',
                                                 ])
                                                 ->preload()
                                                 ->columnSpanFull(),
@@ -148,15 +148,6 @@ class ProjectForm
                                                 ->columnSpanFull(),
                                         ])
                                         ->columns(1),
-
-                                    Section::make('Branding')
-                                        ->schema([
-                                            FileUpload::make('logo')
-                                                ->image()
-                                                ->directory('projects/logos')
-                                                ->maxSize(2048),
-                                        ])
-                                        ->columns(1),
                                 ])
                                 ->columnSpanFull(),
 
@@ -176,16 +167,16 @@ class ProjectForm
                                     Section::make('Display Settings')
                                         ->schema([
                                             Grid::make(4)
-                                            ->schema([
-                                                TextInput::make('order')
-                                                    ->numeric()
-                                                    ->default(0),
-                                                Toggle::make('is_featured')
-                                                    ->default(false),
-                                                Toggle::make('is_posted')
-                                                    ->label('Posted')
-                                                    ->default(false),
-                                            ]),
+                                                ->schema([
+                                                    TextInput::make('order')
+                                                        ->numeric()
+                                                        ->default(0),
+                                                    Toggle::make('is_featured')
+                                                        ->default(false),
+                                                    Toggle::make('is_posted')
+                                                        ->label('Posted')
+                                                        ->default(false),
+                                                ]),
                                         ]),
                                 ])
                                 ->columnSpanFull(),
