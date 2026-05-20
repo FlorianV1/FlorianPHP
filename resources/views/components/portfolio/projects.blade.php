@@ -1,7 +1,7 @@
 @props(['projects'])
 
 @if($projects->count() > 0)
-<section id="projects" style="background:#111114;padding:5rem 0 6rem;">
+<section id="projects" style="background:#111114;padding:5rem 0 6rem;overflow:hidden;">
     <div style="max-width:1152px;margin:0 auto;padding:0 2.5rem;">
 
         {{-- Heading --}}
@@ -11,7 +11,7 @@
         </div>
 
         {{-- Three-column staggered grid --}}
-        <div id="projects-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;align-items:start;">
+        <div id="projects-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;align-items:start;min-width:0;">
             @foreach($projects->take(3)->values() as $index => $project)
                 @php
                     $mt = $index === 1 ? '2.5rem' : ($index === 2 ? '-1rem' : '0');
@@ -90,11 +90,12 @@
         border-color: rgba(255,255,255,0.2) !important;
         box-shadow: 0 20px 50px rgba(0,0,0,0.4);
     }
+    .proj-item { min-width: 0; }
     @media (max-width: 900px) {
         #projects-grid { grid-template-columns: 1fr 1fr !important; }
         .proj-item { margin-top: 0 !important; }
     }
-    @media (max-width: 640px) {
+    @media (max-width: 767px) {
         #projects-grid { grid-template-columns: 1fr !important; }
         #projects-grid-extra { grid-template-columns: 1fr !important; }
         #projects > div { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }

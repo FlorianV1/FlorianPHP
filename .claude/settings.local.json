@@ -12,7 +12,9 @@
       "Bash(composer show *)",
       "Bash(del *)",
       "PowerShell(php -l \"C:\\\\Users\\\\Florian\\\\Herd\\\\florianphp\\\\app\\\\Filament\\\\Pages\\\\OverviewDashboard.php\")",
-      "PowerShell(php -l \"C:\\\\Users\\\\Florian\\\\Herd\\\\florianphp\\\\app\\\\Filament\\\\Widgets\\\\RecentMessagesWidget.php\")"
+      "PowerShell(php -l \"C:\\\\Users\\\\Florian\\\\Herd\\\\florianphp\\\\app\\\\Filament\\\\Widgets\\\\RecentMessagesWidget.php\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)"
     ]
   }
 }

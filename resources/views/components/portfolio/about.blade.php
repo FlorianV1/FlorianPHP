@@ -1,7 +1,7 @@
 @props(['profile'])
 
 @if($profile)
-<section id="about" style="background:#0b0b0d;padding:5rem 0 6rem;">
+<section id="about" style="background:#0b0b0d;padding:5rem 0 6rem;overflow:hidden;">
     <div style="max-width:1152px;margin:0 auto;padding:0 2.5rem;">
         <div class="about-grid" style="display:grid;grid-template-columns:1fr 340px;gap:4rem;align-items:start;">
 

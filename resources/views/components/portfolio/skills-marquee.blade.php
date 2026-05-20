@@ -4,7 +4,7 @@
 @php
     $skillEmojis = ['PHP'=>'⚡','Laravel'=>'🌿','MySQL'=>'🗄','Redis'=>'🔴','Docker'=>'🐳','Vue.js'=>'🔵','Vue'=>'🔵','Git'=>'🐙','Linux'=>'🐧','Node.js'=>'🟢','Python'=>'🐍','TypeScript'=>'📘','JavaScript'=>'📜','React'=>'⚛'];
 @endphp
-<section id="skills" style="background:#111114;padding:5rem 0 0;">
+<section id="skills" style="background:#111114;padding:5rem 0 0;overflow:hidden;">
     <div style="max-width:1152px;margin:0 auto;padding:0 2.5rem;margin-bottom:2.5rem;">
         <div style="display:flex;align-items:baseline;gap:0.75rem;">
             <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,5vw,56px);letter-spacing:-0.03em;margin:0;color:#f1f5f9;">Technologies</h2>
@@ -66,6 +66,9 @@
     @keyframes skillsScroll {
         0%   { transform: translateX(0); }
         100% { transform: translateX(-50%); }
+    }
+    @media (max-width: 767px) {
+        #skills > div:first-child { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
     }
 </style>
 @endif

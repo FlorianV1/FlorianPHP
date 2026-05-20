@@ -72,9 +72,13 @@
     #experience > div { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
     .exp-row {
         grid-template-columns: 1fr !important;
-        gap: 0.5rem !important;
-        padding: 1.5rem 0 !important;
+        gap: 0.75rem !important;
+        padding: 2rem 0 !important;
     }
+    .exp-row h3 { font-size: 18px !important; }
+    .exp-row p  { font-size: 13px !important; line-height: 1.7 !important; }
+    .exp-row li { font-size: 13px !important; }
+    .exp-row > div:first-child { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
 }
 </style>
 

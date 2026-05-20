@@ -26,12 +26,14 @@
     .t-dollar { color:rgba(255,255,255,0.3);font-size:11px; }
 </style>
 
-<section id="hero" style="position:relative;min-height:100vh;overflow:hidden;background:#0b0b0d;">
+<section id="hero" style="position:relative;overflow:hidden;background:#0b0b0d;">
 <style>
-@media (max-width: 767px) {
-    #hero { min-height: 0 !important; }
-    .hero-wrap { padding-top: 5rem !important; padding-bottom: 3rem !important; padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
-}
+    #hero { min-height: 100vh; }
+    .hero-wrap { padding: 0 2.5rem; padding-top: max(5rem, calc(50vh - 250px)); padding-bottom: 6rem; }
+    @media (max-width: 767px) {
+        #hero { min-height: 0; }
+        .hero-wrap { padding-top: 5rem; padding-bottom: 3rem; padding-left: 1.25rem; padding-right: 1.25rem; }
+    }
 </style>
 
     @if($profile)
@@ -51,7 +53,7 @@
         };
     </script>
 
-    <div class="hero-wrap" style="max-width:1152px;margin:0 auto;padding:0 2.5rem;position:relative;padding-top:max(5rem, calc(50vh - 250px));padding-bottom:6rem;">
+    <div class="hero-wrap" style="max-width:1152px;margin:0 auto;position:relative;">
 
         {{-- LEFT COLUMN --}}
         <div style="position:relative;z-index:2;width:460px;max-width:100%;">

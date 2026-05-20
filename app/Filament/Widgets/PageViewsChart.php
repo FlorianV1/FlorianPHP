@@ -9,6 +9,8 @@ class PageViewsChart extends ChartWidget
 {
     protected static ?int $sort = 2;
 
+    protected static ?string $heading = 'Page Views — Last 30 Days';
+
     protected int | string | array $columnSpan = 2;
 
     protected ?string $maxHeight = '260px';
