@@ -34,7 +34,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->text('impact');
+            $table->text('impact')->nullable();
             $table->json('tech_stack');
             $table->string('code_url')->nullable();
             $table->string('live_url')->nullable();
