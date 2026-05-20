@@ -11,6 +11,8 @@ class SettingsSeeder extends Seeder
     public function run(): void
     {
         $defaults = [
+            'navbar_brand_text'  => 'florian.dev',
+            'navbar_brand_color' => '#ffffff',
             'theme' => 'default',
             'custom_colors' => [
                 'app_bg' => '#0E0E10',
@@ -25,9 +27,9 @@ class SettingsSeeder extends Seeder
             'overlay_intensity' => 50,
             'sections_order' => [
                 ['section' => 'hero', 'enabled' => true],
-                ['section' => 'now', 'enabled' => true],
                 ['section' => 'projects', 'enabled' => true],
                 ['section' => 'experience', 'enabled' => true],
+                ['section' => 'now', 'enabled' => true],
                 ['section' => 'skills', 'enabled' => true],
                 ['section' => 'about', 'enabled' => true],
                 ['section' => 'contact', 'enabled' => true],

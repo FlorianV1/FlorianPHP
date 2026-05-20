@@ -7,12 +7,12 @@
         {{-- Heading --}}
         <div style="display:flex;align-items:baseline;gap:0.75rem;margin-bottom:3.5rem;">
             <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,5vw,56px);letter-spacing:-0.03em;margin:0;color:#f1f5f9;">Experience</h2>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.18);margin-bottom:6px;letter-spacing:0.04em;">/ 02</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.18);margin-bottom:6px;letter-spacing:0.04em;">/ {{ str_pad($experiences->count(), 2, '0', STR_PAD_LEFT) }}</span>
         </div>
 
         <div style="display:flex;flex-direction:column;gap:0;">
             @foreach($experiences as $experience)
-                <div style="display:grid;grid-template-columns:200px 1fr;gap:3rem;padding:2.5rem 0;{{ !$loop->last ? 'border-bottom:1px solid rgba(255,255,255,0.06);' : '' }}">
+                <div class="exp-row" style="display:grid;grid-template-columns:200px 1fr;gap:3rem;padding:2.5rem 0;{{ !$loop->last ? 'border-bottom:1px solid rgba(255,255,255,0.06);' : '' }}">
 
                     {{-- Left: date, company, meta --}}
                     <div>
@@ -66,6 +66,17 @@
         </div>
     </div>
 </section>
+
+<style>
+@media (max-width: 767px) {
+    #experience > div { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+    .exp-row {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+        padding: 1.5rem 0 !important;
+    }
+}
+</style>
 
 {{-- Wave: experience (#0b0b0d) → technologies (#111114) --}}
 <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;width:100%;height:80px;margin-top:-1px;background:#0b0b0d;">

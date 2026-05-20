@@ -9,7 +9,7 @@
                 <span style="opacity:0.4;">~/</span>florian.dev
             </div>
             <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:0.04em;">
-                © {{ date('Y') }} {{ $profile->name ?? 'Florian' }}. Built with Laravel &amp; love.
+                © {{ date('Y') }} {{ $profile->name ?? 'Florian' }}. {{ $profile->footer_tagline ?? 'Built with Laravel &amp; love.' }}
             </div>
         </div>
 

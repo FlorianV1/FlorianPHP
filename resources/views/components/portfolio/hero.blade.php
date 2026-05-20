@@ -1,17 +1,57 @@
-@props(['profile'])
+@props(['profile', 'skills' => null, 'projects' => null])
+
+<style>
+    @keyframes tBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .h-fade {
+        opacity: 0;
+        transform: translateY(16px);
+        animation: hFadeIn 0.6s ease-out forwards;
+    }
+    @keyframes hFadeIn { to { opacity:1; transform:translateY(0); } }
+
+    .t-green  { color: #86efac; }
+    .t-dim    { color: rgba(255,255,255,0.25); }
+    .t-key    { color: #fcd34d; }
+    .t-str    { color: #c4b5fd; }
+    .t-bool   { color: #93c5fd; }
+    .t-path   { color: #93c5fd; }
+    .t-yellow { color: #fcd34d; }
+    .t-comment{ color: rgba(255,255,255,0.2); }
+    .t-line   { min-height:1.5em; }
+    .t-row    { display:flex;align-items:baseline;gap:0; }
+    .t-prompt { color:rgba(255,255,255,0.75);font-size:11px;flex-shrink:0; }
+    .t-colon  { color:rgba(255,255,255,0.2);font-size:11px; }
+    .t-cpath  { color:#93c5fd;font-size:11px; }
+    .t-dollar { color:rgba(255,255,255,0.3);font-size:11px; }
+</style>
 
 <section id="hero" style="position:relative;min-height:100vh;overflow:hidden;background:#0b0b0d;">
+<style>
+@media (max-width: 767px) {
+    #hero { min-height: 0 !important; }
+    .hero-wrap { padding-top: 5rem !important; padding-bottom: 3rem !important; padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+}
+</style>
 
     @if($profile)
+    @php
+        $heroProjects = $projects && $projects->count()
+            ? $projects->take(3)->pluck('title')->toArray()
+            : ['api-core', 'dashboard', 'portfolio'];
+    @endphp
     <script>
         window._heroProfile = {
             name:        {{ json_encode(strtolower($profile->name ?? 'florian')) }},
             displayName: {{ json_encode($profile->name ?? 'Florian') }},
             role:        {{ json_encode($profile->role ?? 'Software Developer') }},
+            location:    {{ json_encode($profile->location ?? 'Netherlands') }},
+            available:   {{ json_encode($profile->status_available ?? true) }},
+            projects:    {{ json_encode($heroProjects) }},
         };
     </script>
 
-    <div style="max-width:1152px;margin:0 auto;padding:0 2.5rem;position:relative;padding-top:13rem;padding-bottom:6rem;">
+    <div class="hero-wrap" style="max-width:1152px;margin:0 auto;padding:0 2.5rem;position:relative;padding-top:max(5rem, calc(50vh - 250px));padding-bottom:6rem;">
 
         {{-- LEFT COLUMN --}}
         <div style="position:relative;z-index:2;width:460px;max-width:100%;">
@@ -43,15 +83,15 @@
 
             {{-- CTA buttons --}}
             <div class="h-fade" style="animation-delay:0.3s;display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1.75rem;">
-                <a href="#projects" style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;padding:11px 22px;background:#e2e8f0;color:#0b0b0d;border-radius:4px;text-decoration:none;transition:background 0.2s,transform 0.15s;"
+                <a href="{{ $profile->hero_cta_primary_url ?? '#projects' }}" style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;padding:11px 22px;background:#e2e8f0;color:#0b0b0d;border-radius:4px;text-decoration:none;transition:background 0.2s,transform 0.15s;"
                    onmouseover="this.style.background='#f1f5f9';this.style.transform='translateY(-1px)'"
                    onmouseout="this.style.background='#e2e8f0';this.style.transform=''">
-                    View my work
+                    {{ $profile->hero_cta_primary_label ?? 'View my work' }}
                 </a>
-                <a href="#contact" style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:400;padding:11px 22px;background:transparent;color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.12);border-radius:4px;text-decoration:none;transition:border-color 0.2s,color 0.2s,transform 0.15s;"
+                <a href="{{ $profile->hero_cta_secondary_url ?? '#contact' }}" style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:400;padding:11px 22px;background:transparent;color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.12);border-radius:4px;text-decoration:none;transition:border-color 0.2s,color 0.2s,transform 0.15s;"
                    onmouseover="this.style.borderColor='rgba(255,255,255,0.45)';this.style.color='rgba(255,255,255,1)';this.style.transform='translateY(-1px)'"
                    onmouseout="this.style.borderColor='rgba(255,255,255,0.12)';this.style.color='rgba(255,255,255,0.45)';this.style.transform=''">
-                    Get in touch
+                    {{ $profile->hero_cta_secondary_label ?? 'Get in touch' }}
                 </a>
             </div>
 
@@ -87,14 +127,20 @@
 
             {{-- Stack badges — revealed after terminal completes --}}
             <div id="hero-stack-badges" style="display:flex;flex-wrap:wrap;gap:0.5rem;opacity:0;transition:opacity 0.5s ease;">
-                @foreach(['PHP','Laravel','MySQL','Redis','Docker','Git','Linux','Vue.js'] as $badge)
-                    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.04em;padding:3px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:9999px;color:rgba(255,255,255,0.55);">{{ $badge }}</span>
-                @endforeach
+                @if($skills && $skills->count())
+                    @foreach($skills->take(10) as $skill)
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.04em;padding:3px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:9999px;color:rgba(255,255,255,0.55);">{{ $skill->name }}</span>
+                    @endforeach
+                @else
+                    @foreach(['PHP','Laravel','MySQL','Redis','Docker','Git','Linux','Vue.js'] as $badge)
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.04em;padding:3px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.12);border-radius:9999px;color:rgba(255,255,255,0.55);">{{ $badge }}</span>
+                    @endforeach
+                @endif
             </div>
         </div>
 
         {{-- TERMINAL — absolutely positioned behind left column --}}
-        <div class="hidden lg:block" aria-hidden="true" style="position:absolute;right:-40px;top:13rem;width:58%;max-width:720px;z-index:1;pointer-events:none;user-select:none;opacity:0.45;transform:perspective(800px) rotateY(-4deg) scale(0.93);transform-origin:right top;">
+        <div class="hidden lg:block" aria-hidden="true" style="position:absolute;right:-40px;top:max(5rem, calc(50vh - 250px));width:58%;max-width:720px;z-index:1;pointer-events:none;user-select:none;opacity:0.45;transform:perspective(800px) rotateY(-4deg) scale(0.93);transform-origin:right top;">
             <div style="background:#0d0d10;border:1px solid rgba(255,255,255,0.12);border-radius:10px;overflow:hidden;box-shadow:0 32px 72px rgba(0,0,0,0.7);">
                 {{-- Titlebar --}}
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:#111115;border-bottom:1px solid rgba(255,255,255,0.06);">
@@ -128,32 +174,6 @@
     <path d="M0,40 C180,80 360,0 540,40 C720,80 900,0 1080,38 C1260,76 1380,20 1440,40 L1440,80 L0,80 Z" fill="#111114"/>
 </svg>
 
-<style>
-    @keyframes tBlink { 0%,100%{opacity:1} 50%{opacity:0} }
-
-    .h-fade {
-        opacity: 0;
-        transform: translateY(16px);
-        animation: hFadeIn 0.6s ease-out forwards;
-    }
-    @keyframes hFadeIn { to { opacity:1; transform:translateY(0); } }
-
-    .t-green  { color: #86efac; }
-    .t-dim    { color: rgba(255,255,255,0.25); }
-    .t-key    { color: #fcd34d; }
-    .t-str    { color: #c4b5fd; }
-    .t-bool   { color: #93c5fd; }
-    .t-path   { color: #93c5fd; }
-    .t-yellow { color: #fcd34d; }
-    .t-comment{ color: rgba(255,255,255,0.2); }
-    .t-line   { min-height:1.5em; }
-    .t-row    { display:flex;align-items:baseline;gap:0; }
-    .t-prompt { color:rgba(255,255,255,0.75);font-size:11px;flex-shrink:0; }
-    .t-colon  { color:rgba(255,255,255,0.2);font-size:11px; }
-    .t-cpath  { color:#93c5fd;font-size:11px; }
-    .t-dollar { color:rgba(255,255,255,0.3);font-size:11px; }
-</style>
-
 <script>
 (function () {
     const p = window._heroProfile || { name:'florian', displayName:'Florian', role:'Software Developer' };
@@ -171,16 +191,21 @@
                 '<span class="t-dim">{</span>',
                 '&nbsp;&nbsp;<span class="t-key">"name"</span><span class="t-dim">:</span> <span class="t-str">"' + p.displayName + '"</span><span class="t-dim">,</span>',
                 '&nbsp;&nbsp;<span class="t-key">"role"</span><span class="t-dim">:</span> <span class="t-str">"' + p.role + '"</span><span class="t-dim">,</span>',
-                '&nbsp;&nbsp;<span class="t-key">"location"</span><span class="t-dim">:</span> <span class="t-str">"Netherlands"</span><span class="t-dim">,</span>',
+                '&nbsp;&nbsp;<span class="t-key">"location"</span><span class="t-dim">:</span> <span class="t-str">"' + p.location + '"</span><span class="t-dim">,</span>',
                 '&nbsp;&nbsp;<span class="t-key">"focus"</span><span class="t-dim">:</span> <span class="t-str">"web applications"</span><span class="t-dim">,</span>',
-                '&nbsp;&nbsp;<span class="t-key">"available"</span><span class="t-dim">:</span> <span class="t-bool">true</span>',
+                '&nbsp;&nbsp;<span class="t-key">"available"</span><span class="t-dim">:</span> <span class="t-bool">' + p.available + '</span>',
                 '<span class="t-dim">}</span>',
             ]
         },
         {
             cmd: 'ls projects/',
             out: [
-                '<span class="t-green">BingoMC/</span>&nbsp;&nbsp;&nbsp;<span class="t-path">api-core/</span>&nbsp;&nbsp;&nbsp;<span class="t-yellow">dashboard/</span>',
+                (function() {
+                    const colors = ['t-green', 't-path', 't-yellow'];
+                    return p.projects.map((name, i) =>
+                        '<span class="' + colors[i % colors.length] + '">' + name + '/</span>'
+                    ).join('&nbsp;&nbsp;&nbsp;');
+                })()
             ]
         },
         {
@@ -257,5 +282,13 @@
     }
 
     document.addEventListener('DOMContentLoaded', run);
+
+    // Safety net: force .h-fade elements visible if animation never fires
+    setTimeout(function () {
+        document.querySelectorAll('.h-fade').forEach(function (el) {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+        });
+    }, 1500);
 })();
 </script>

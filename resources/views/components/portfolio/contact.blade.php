@@ -2,7 +2,7 @@
 
 <section id="contact" style="background:#111114;padding:5rem 0 6rem;">
     <div style="max-width:1152px;margin:0 auto;padding:0 2.5rem;">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;">
+        <div class="contact-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;">
 
             {{-- Left --}}
             <div>
@@ -12,7 +12,7 @@
                 </div>
 
                 <p style="font-family:'JetBrains Mono',monospace;font-size:14px;color:rgba(255,255,255,0.45);line-height:1.75;margin:0 0 2rem;">
-                    If you want to talk about work, collaboration, or just an idea — I'm all ears.
+                    {{ $profile->contact_intro ?? 'If you want to talk about work, collaboration, or just an idea — I\'m all ears.' }}
                 </p>
 
                 {{-- Direct email --}}
@@ -118,3 +118,10 @@
         </div>
     </div>
 </section>
+
+<style>
+@media (max-width: 767px) {
+    #contact > div { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+    .contact-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
+}
+</style>

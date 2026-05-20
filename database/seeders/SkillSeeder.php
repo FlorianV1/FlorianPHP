@@ -64,7 +64,10 @@ class SkillSeeder extends Seeder
         ];
 
         foreach ($skills as $skill) {
-            Skill::create(array_merge($skill, ['is_active' => true]));
+            Skill::updateOrCreate(
+                ['name' => $skill['name']],
+                array_merge($skill, ['is_active' => true])
+            );
         }
     }
 }

@@ -39,9 +39,12 @@
     <meta property="og:title" content="{{ $profile->name ?? 'Florian' }} - {{ $profile->role ?? 'Software Developer' }}">
     <meta property="og:description" content="{{ $profile->tagline ?? '' }}">
 
-    {{-- Favicon from settings --}}
+    {{-- Favicon --}}
     @if($favicon)
         <link rel="icon" type="image/png" href="{{ Storage::url($favicon) }}">
+    @else
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="alternate icon" href="/favicon.ico">
     @endif
 
     {{-- Devicons --}}
@@ -104,6 +107,7 @@
             color: #f1f5f9;
             font-family: 'JetBrains Mono', monospace;
             margin: 0;
+            overflow-x: hidden;
         }
     </style>
 </head>
@@ -132,7 +136,7 @@
         @endif
 
         @if($key === 'hero')
-            <x-portfolio.hero :profile="$profile" />
+            <x-portfolio.hero :profile="$profile" :skills="$skills" :projects="$projects" />
 
         @elseif($key === 'now')
             <x-portfolio.now :items="$nowItems" />

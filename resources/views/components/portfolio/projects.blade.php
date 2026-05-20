@@ -7,17 +7,17 @@
         {{-- Heading --}}
         <div style="display:flex;align-items:baseline;gap:0.75rem;margin-bottom:3rem;">
             <h2 style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,5vw,56px);letter-spacing:-0.03em;margin:0;color:#f1f5f9;">Projects</h2>
-            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.18);margin-bottom:6px;letter-spacing:0.04em;">/ 03</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(255,255,255,0.18);margin-bottom:6px;letter-spacing:0.04em;">/ {{ str_pad($projects->count(), 2, '0', STR_PAD_LEFT) }}</span>
         </div>
 
         {{-- Three-column staggered grid --}}
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;align-items:start;">
+        <div id="projects-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;align-items:start;">
             @foreach($projects->take(3)->values() as $index => $project)
                 @php
                     $mt = $index === 1 ? '2.5rem' : ($index === 2 ? '-1rem' : '0');
                     $num = str_pad($index + 1, 2, '0', STR_PAD_LEFT);
                 @endphp
-                <div style="position:relative;margin-top:{{ $mt }};">
+                <div class="proj-item" style="position:relative;margin-top:{{ $mt }};">
                     @if($project->is_featured)
                         <span style="position:absolute;top:-10px;right:18px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;padding:3px 10px;background:#ffffff;color:#0b0b0d;border-radius:9999px;z-index:1;white-space:nowrap;">★ Featured</span>
                     @endif
@@ -57,7 +57,7 @@
 
         {{-- Remaining projects in a simpler 2-col layout if more than 3 --}}
         @if($projects->count() > 3)
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:1.5rem;">
+            <div id="projects-grid-extra" style="display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:1.5rem;">
                 @foreach($projects->skip(3) as $project)
                     <div class="proj-card" style="background:var(--bg);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:1.75rem;transition:transform 0.25s ease,border-color 0.25s ease;">
                         <h3 style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:#f1f5f9;margin:0 0 0.6rem;">{{ $project->title }}</h3>
@@ -92,9 +92,12 @@
     }
     @media (max-width: 900px) {
         #projects-grid { grid-template-columns: 1fr 1fr !important; }
+        .proj-item { margin-top: 0 !important; }
     }
     @media (max-width: 640px) {
         #projects-grid { grid-template-columns: 1fr !important; }
+        #projects-grid-extra { grid-template-columns: 1fr !important; }
+        #projects > div { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
     }
 </style>
 @endif
