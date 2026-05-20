@@ -26,6 +26,9 @@ class ControlPanelProvider extends PanelProvider
             ->id('controller')
             ->path('controller')
             ->login()
+            ->profile()
+            ->sidebarCollapsibleOnDesktop()
+            ->spa()
             ->colors([
                 'primary' => Color::Blue,
             ])
