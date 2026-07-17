@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\ResolveCountry;
 use App\Mail\ContactNotification;
 use App\Models\ContactMessage;
 use App\Models\Experience;
@@ -91,14 +90,12 @@ class PortfolioController extends Controller
             return;
         }
 
-        $view = PageView::create([
+        PageView::create([
             'page'       => '/',
             'ip'         => $ip,
             'user_agent' => substr($ua, 0, 255),
             'referrer'   => $request->header('referer'),
         ]);
-
-        ResolveCountry::dispatch($view->id);
     }
 
     public function submitContact(Request $request)
@@ -109,13 +106,62 @@ class PortfolioController extends Controller
             'message' => 'required|string|max:5000',
         ]);
 
-        $contactMessage = ContactMessage::create($validated);
+        // Anti-spam: quarantine anything that trips a signal — store it flagged
+        // (never lost, reviewable in admin) but skip the inbox notification, and
+        // still show "success" so bots don't learn they were blocked.
+        $isSpam = $this->looksLikeSpam($request, $validated);
 
-        $profile = Profile::first();
-        if ($profile && $profile->email) {
-            Mail::to($profile->email)->send(new ContactNotification($contactMessage));
+        $contactMessage = ContactMessage::create($validated + ['is_spam' => $isSpam]);
+
+        if (! $isSpam) {
+            $profile = Profile::first();
+            if ($profile && $profile->email) {
+                Mail::to($profile->email)->send(new ContactNotification($contactMessage));
+            }
         }
 
         return redirect()->back()->with('contact_success', true);
+    }
+
+    /**
+     * Layered, no-friction spam heuristics for the contact form.
+     * Real visitors never trip these; automated bots reliably do.
+     */
+    private function looksLikeSpam(Request $request, array $data): bool
+    {
+        // 1. Honeypot — a hidden field no human ever sees or fills.
+        if (filled($request->input('website'))) {
+            return true;
+        }
+
+        // 2. Time-trap — bots submit near-instantly. Require a few seconds
+        //    on the page (and reject absurdly stale/forged timestamps).
+        $renderedAt = (int) $request->input('form_ts', 0);
+        $elapsed    = time() - $renderedAt;
+        if ($renderedAt <= 0 || $elapsed < 3 || $elapsed > 86400) {
+            return true;
+        }
+
+        // 3. Content signals — this form is for a human to reach out; real
+        //    messages almost never carry links. Spam here always does.
+        $message = (string) ($data['message'] ?? '');
+        $name    = (string) ($data['name'] ?? '');
+
+        $linkCount = preg_match_all('~https?://|www\.|\b[a-z0-9-]+\.(link|top|xyz|shop|club|online|site|casino|bet|win|loan)\b~i', $message . ' ' . $name);
+        if ($linkCount >= 1) {
+            return true;
+        }
+
+        // 4. Common spam keywords seen in these blasts.
+        if (preg_match('~\b(jackpot|casino|crypto|viagra|cialis|\$\d[\d,]{3,}|bit\.ly|tinyurl|forex|binary option|sex|porn|escort)\b~i', $message . ' ' . $name)) {
+            return true;
+        }
+
+        // 5. A name that is itself an email address is a bot tell.
+        if (filter_var($name, FILTER_VALIDATE_EMAIL)) {
+            return true;
+        }
+
+        return false;
     }
 }

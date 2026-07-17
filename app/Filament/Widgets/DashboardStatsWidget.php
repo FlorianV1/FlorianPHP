@@ -23,12 +23,6 @@ class DashboardStatsWidget extends BaseWidget
 
         $uniqueVisitors = PageView::distinct('ip')->count('ip');
 
-        $topCountry = PageView::whereNotNull('country')
-            ->selectRaw('country, count(*) as total')
-            ->groupBy('country')
-            ->orderByDesc('total')
-            ->first();
-
         $unreadMessages = ContactMessage::unread()->count();
         $publishedProjects = Project::posted()->count();
 
@@ -58,11 +52,6 @@ class DashboardStatsWidget extends BaseWidget
                 ->description('Distinct IP addresses')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('info'),
-
-            Stat::make('Top Country', $topCountry?->country ?? '—')
-                ->description($topCountry ? number_format($topCountry->total) . ' views' : 'No data yet')
-                ->descriptionIcon('heroicon-m-globe-alt')
-                ->color('warning'),
 
             Stat::make('Unread Messages', $unreadMessages)
                 ->description("{$publishedProjects} projects published")

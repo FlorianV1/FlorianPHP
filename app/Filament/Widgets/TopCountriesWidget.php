@@ -7,6 +7,8 @@ use Filament\Widgets\Widget;
 
 class TopCountriesWidget extends Widget
 {
+    protected static bool $isDiscovered = false;
+
     protected static ?int $sort = 5;
 
     protected string $view = 'filament.widgets.top-countries';

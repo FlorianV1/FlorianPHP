@@ -78,6 +78,16 @@
                 <form action="{{ route('contact.submit') }}" method="POST" style="display:contents;">
                     @csrf
 
+                    {{-- Anti-spam honeypot: hidden from humans, bots fill it in.
+                         Not display:none (some bots skip those) — pushed off-screen. --}}
+                    <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;" tabindex="-1">
+                        <label for="website">Website (leave blank)</label>
+                        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                    </div>
+
+                    {{-- Anti-spam time-trap: when the form was rendered. --}}
+                    <input type="hidden" name="form_ts" value="{{ time() }}">
+
                     <div>
                         <label for="name" style="display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:0.5rem;">Name</label>
                         <input type="text" id="name" name="name" value="{{ old('name') }}" required

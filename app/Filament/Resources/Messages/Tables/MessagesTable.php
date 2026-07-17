@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
@@ -49,6 +50,11 @@ class MessagesTable
                     ->nullable()
                     ->trueLabel('Read')
                     ->falseLabel('Unread'),
+
+                Filter::make('is_spam')
+                    ->label('Show quarantined spam')
+                    ->query(fn ($query) => $query->onlySpam())
+                    ->toggle(),
             ])
             ->recordActions([
                 ViewAction::make(),
