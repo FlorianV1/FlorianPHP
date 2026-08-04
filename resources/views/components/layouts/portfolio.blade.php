@@ -39,6 +39,14 @@
     <meta property="og:title" content="{{ $profile->name ?? 'Florian' }} - {{ $profile->role ?? 'Software Developer' }}">
     <meta property="og:description" content="{{ $profile->tagline ?? '' }}">
 
+    {{-- Bugsnag --}}
+    <script src="//d2wy8f7a9ursnm.cloudfront.net/v8/bugsnag.min.js"></script>
+    <script type="module">
+        import BugsnagPerformance from '//d2wy8f7a9ursnm.cloudfront.net/v1/bugsnag-performance.min.js'
+        Bugsnag.start({ apiKey: '1d5f0db939c8f8209f8a37107ddd2f2a' })
+        BugsnagPerformance.start({ apiKey: '1d5f0db939c8f8209f8a37107ddd2f2a' })
+    </script>
+
     {{-- Favicon --}}
     @if($favicon)
         <link rel="icon" type="image/png" href="{{ Storage::url($favicon) }}">
