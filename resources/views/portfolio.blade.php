@@ -8,5 +8,10 @@
     :nowItems="$nowItems"
     :projects="$projects"
     :experiences="$experiences"
+    :education="$education"
     :skills="$skills"
+    :services="$services"
+    :testimonials="$testimonials"
+    :stats="$stats"
+    :seoPerson="$profile"
 />

@@ -26,17 +26,40 @@ class ExperienceForm
                     ->columns(2)
                     ->icon('heroicon-o-briefcase')
                     ->schema([
+                        Select::make('entry_type')
+                            ->label('Entry type')
+                            ->options([
+                                'work' => 'Work',
+                                'education' => 'Education',
+                            ])
+                            ->default('work')
+                            ->required()
+                            ->native(false)
+                            ->live()
+                            ->helperText('Education entries render in their own section on the site.')
+                            ->columnSpanFull(),
+
                         TextInput::make('title')
                             ->required()
                             ->maxLength(255)
-                            ->placeholder('Senior Software Engineer')
+                            ->placeholder(fn ($get) => $get('entry_type') === 'education'
+                                ? 'BSc Computer Science'
+                                : 'Senior Software Engineer')
                             ->columnSpanFull(),
 
                         TextInput::make('company')
                             ->required()
                             ->maxLength(255)
-                            ->placeholder('Acme Inc.')
+                            ->label(fn ($get) => $get('entry_type') === 'education' ? 'School / institution' : 'Company')
+                            ->placeholder(fn ($get) => $get('entry_type') === 'education' ? 'Avans Hogeschool' : 'Acme Inc.')
                             ->prefixIcon('heroicon-o-building-office-2'),
+
+                        TextInput::make('credential')
+                            ->label('Credential / diploma')
+                            ->maxLength(255)
+                            ->placeholder('Bachelor of Science')
+                            ->visible(fn ($get) => $get('entry_type') === 'education')
+                            ->columnSpanFull(),
 
                         TextInput::make('company_url')
                             ->url()

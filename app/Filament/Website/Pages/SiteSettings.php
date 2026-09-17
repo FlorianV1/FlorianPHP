@@ -2,8 +2,11 @@
 
 namespace App\Filament\Website\Pages;
 
+use App\Http\Controllers\PortfolioController;
 use App\Models\Settings;
+use App\Support\SiteBranding;
 use BackedEnum;
+use Filament\Forms\Components\Textarea;
 use UnitEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -36,6 +39,7 @@ class SiteSettings extends Page implements HasSchemas
     public function mount(): void
     {
         $this->form->fill([
+            'site_branding' => SiteBranding::all(),
             'navbar_brand_text' => Settings::get('navbar_brand_text', 'Florian'),
             'navbar_brand_color' => Settings::get('navbar_brand_color', '#ffffff'),
             'favicon' => Settings::get('favicon', null),
@@ -49,15 +53,22 @@ class SiteSettings extends Page implements HasSchemas
                 'text_secondary' => '#A8ACB3',
                 'text_muted' => '#6F737A',
             ]),
-            'sections_order' => Settings::get('sections_order', [
-                ['section' => 'hero', 'enabled' => true],
-                ['section' => 'now', 'enabled' => true],
-                ['section' => 'projects', 'enabled' => true],
-                ['section' => 'experience', 'enabled' => true],
-                ['section' => 'skills', 'enabled' => true],
-                ['section' => 'about', 'enabled' => true],
-                ['section' => 'contact', 'enabled' => true],
-            ]),
+            // Sections added after this site was first configured are missing
+            // from the stored order; append them so they are manageable here
+            // exactly as the frontend appends them when rendering.
+            'sections_order' => (function () {
+                $stored = Settings::get('sections_order', []);
+                $stored = is_array($stored) ? $stored : [];
+                $keys = collect($stored)->pluck('section')->all();
+
+                foreach (PortfolioController::defaultSectionsOrder() as $default) {
+                    if (! in_array($default['section'], $keys, true)) {
+                        $stored[] = $default;
+                    }
+                }
+
+                return $stored;
+            })(),
             'navbar_links' => Settings::get('navbar_links', [
                 ['label' => 'Projects', 'url' => '#projects', 'enabled' => true],
                 ['label' => 'Experience', 'url' => '#experience', 'enabled' => true],
@@ -73,14 +84,76 @@ class SiteSettings extends Page implements HasSchemas
         return $schema
             ->statePath('data')
             ->components([
-                Section::make('Branding')
+                Section::make('Identity')
+                    ->description('The name, logo and terminal prompt used across the whole site. These used to be hardcoded in three different Blade files.')
+                    ->schema([
+                        TextInput::make('site_branding.full_name')
+                            ->label('Full name')
+                            ->required()
+                            ->helperText('Used in the hero headline, the page title, the footer and the JSON-LD Person schema.')
+                            ->columnSpanFull(),
+
+                        Grid::make(2)->schema([
+                            TextInput::make('site_branding.logo_prefix')
+                                ->label('Logo prefix')
+                                ->placeholder('~/')
+                                ->helperText('The dimmed part of the logo.'),
+
+                            TextInput::make('site_branding.logo_text')
+                                ->label('Logo text')
+                                ->placeholder('florian.dev')
+                                ->helperText('Navbar and footer read the same value.'),
+                        ]),
+
+                        Grid::make(3)->schema([
+                            TextInput::make('site_branding.terminal_user')
+                                ->label('Terminal user')
+                                ->placeholder('florian'),
+
+                            TextInput::make('site_branding.terminal_host')
+                                ->label('Terminal host')
+                                ->placeholder('dev'),
+
+                            TextInput::make('site_branding.terminal_path')
+                                ->label('Terminal path')
+                                ->placeholder('~/portfolio'),
+                        ]),
+                    ]),
+
+                Section::make('Search & social')
+                    ->description('How the site looks in Google results and when a link is shared.')
+                    ->schema([
+                        TextInput::make('site_branding.site_title')
+                            ->label('Page title')
+                            ->maxLength(70)
+                            ->helperText('Leave blank to use "Full name — role". Aim for under 60 characters.')
+                            ->columnSpanFull(),
+
+                        Textarea::make('site_branding.meta_description')
+                            ->label('Meta description')
+                            ->rows(2)
+                            ->maxLength(200)
+                            ->helperText('Leave blank to use the profile tagline. Aim for 150–160 characters.')
+                            ->columnSpanFull(),
+
+                        FileUpload::make('site_branding.og_image')
+                            ->label('Social share image')
+                            ->image()
+                            ->imageEditor()
+                            ->directory('og')
+                            ->helperText('1200 × 630 px. Used for og:image and the Twitter card.')
+                            ->nullable()
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Navbar')
                     ->description('Navbar brand text, color, and favicon.')
                     ->schema([
                         Grid::make(2)->schema([
                             TextInput::make('navbar_brand_text')
-                                ->label('Brand text')
+                                ->label('Brand text override')
                                 ->placeholder('Florian')
-                                ->required(),
+                                ->helperText('Leave blank to use the logo text above.'),
 
                             ColorPicker::make('navbar_brand_color')
                                 ->label('Brand text color')
@@ -139,9 +212,12 @@ class SiteSettings extends Page implements HasSchemas
                                         Select::make('section')
                                             ->options([
                                                 'hero' => 'Hero',
+                                                'services' => 'Services',
                                                 'now' => 'Now / Focus',
                                                 'projects' => 'Projects',
+                                                'testimonials' => 'Testimonials',
                                                 'experience' => 'Experience',
+                                                'education' => 'Education',
                                                 'skills' => 'Skills',
                                                 'about' => 'About',
                                                 'contact' => 'Contact',
@@ -234,6 +310,10 @@ class SiteSettings extends Page implements HasSchemas
             };
         }
 
+        Settings::set(SiteBranding::KEY, array_merge(
+            SiteBranding::defaults(),
+            array_filter($data['site_branding'] ?? [], fn ($v) => $v !== null && $v !== '')
+        ));
         Settings::set('navbar_brand_text', $data['navbar_brand_text'] ?? 'Florian');
         Settings::set('navbar_brand_color', $data['navbar_brand_color'] ?? '#ffffff');
         Settings::set('favicon', $data['favicon'] ?? null);

@@ -7,13 +7,18 @@ use Carbon\Carbon;
 
 class Experience extends Model
 {
+    public const TYPE_WORK = 'work';
+    public const TYPE_EDUCATION = 'education';
+
     protected $fillable = [
+        'entry_type',
         'title',
         'company',
         'company_logo',
         'company_url',
         'location',
         'employment_type',
+        'credential',
         'period',
         'started_at',
         'ended_at',
@@ -37,6 +42,16 @@ class Experience extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function scopeWork($query)
+    {
+        return $query->where('entry_type', self::TYPE_WORK);
+    }
+
+    public function scopeEducation($query)
+    {
+        return $query->where('entry_type', self::TYPE_EDUCATION);
     }
 
     public function scopeOrdered($query)

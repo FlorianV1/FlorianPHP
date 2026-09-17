@@ -1,2 +1,5 @@
 User-agent: *
-Disallow:
+Disallow: /website
+Disallow: /management
+
+Sitemap: https://florianphp.com/sitemap.xml

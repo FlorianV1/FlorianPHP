@@ -13,7 +13,7 @@ class ProjectSeeder extends Seeder
             [
                 'title' => 'BingoMC',
                 'description' => 'A Minecraft minigame server platform with custom game logic, real-time leaderboards, player progression, and an economy system serving thousands of concurrent players.',
-                'impact' => 'Scaled to 18k+ monthly active players with sub-100ms game tick latency.',
+                'outcome' => 'Grew from a side project into a platform with an active player base and community.',
                 'role' => 'Lead Developer',
                 'project_type' => 'personal',
                 'complexity' => 'high',
@@ -32,7 +32,7 @@ class ProjectSeeder extends Seeder
             [
                 'title' => 'Techno Events',
                 'description' => "Technoevents.nl is an aggregator for the Dutch techno scene. It automatically scrapes upcoming events from organizers' own websites — dates, venues, ticket links, flyers — into one browsable agenda, and reads each flyer to pull out the lineup so you can find events by artist.",
-                'impact' => 'One agenda for the Dutch techno scene, searchable by artist rather than by organizer.',
+                'outcome' => 'One agenda for the Dutch techno scene, searchable by artist rather than by organizer.',
                 'role' => 'Solo Developer',
                 'project_type' => 'personal',
                 'complexity' => 'high',
@@ -51,7 +51,7 @@ class ProjectSeeder extends Seeder
             [
                 'title' => 'Roadtrip-events.nl',
                 'description' => 'Roadtrip Events is a custom web platform for a company that organises curated road trip experiences in the Netherlands and abroad. Full application in Laravel: public-facing website for browsing destinations and booking trips, plus Filament-powered admin panel for managing events, bookings and customers.',
-                'impact' => 'Replaced a manual booking process with a self-service platform the client administers themselves.',
+                'outcome' => 'Replaced a manual booking process with a self-service platform the client administers themselves.',
                 'role' => 'Solo Developer',
                 'project_type' => 'client',
                 'complexity' => 'high',

@@ -38,4 +38,23 @@ class Profile extends Model
         'status_available' => 'boolean',
         'social_links' => 'array',
     ];
+
+    /**
+     * Renders the timezone as "Europe/Amsterdam (CEST)" — the abbreviation is
+     * computed now, so it follows daylight saving instead of going stale the
+     * way the hardcoded "UTC+1 / CET" did.
+     *
+     * A non-IANA value is passed through untouched, so an existing free-text
+     * entry keeps rendering until it is changed in Filament.
+     */
+    public function getLocationTimezoneLabelAttribute(): ?string
+    {
+        $value = $this->location_timezone ?: 'Europe/Amsterdam';
+
+        if (! in_array($value, timezone_identifiers_list(), true)) {
+            return $this->location_timezone;
+        }
+
+        return $value . ' (' . now()->setTimezone($value)->format('T') . ')';
+    }
 }
