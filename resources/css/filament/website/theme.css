@@ -1,0 +1,18 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+/*
+| Shared by both panels — WebsitePanelProvider and ManagementPanelProvider both
+| point `viteTheme()` here, so Tailwind has to scan both trees.
+*/
+@source '../../../../app/Filament/Website/**/*';
+@source '../../../../app/Filament/Management/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/*
+| Plugin views. Tailwind only generates the utilities it can see, and these
+| packages ship Blade rather than compiled CSS — without these lines the panel
+| switcher and the widget grid render unstyled.
+*/
+@source '../../../../vendor/bezhansalleh/filament-panel-switch/resources/views/**/*.blade.php';
+@source '../../../../vendor/johnrivera7/filament-custom-dashboard-widgets/resources/views/**/*.blade.php';
+@source '../../../../vendor/pxlrbt/filament-environment-indicator/resources/views/**/*.blade.php';

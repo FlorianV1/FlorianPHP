@@ -36,9 +36,15 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'management'
-            ? (bool) $this->is_admin
-            : true;
+        if ($panel->getId() !== 'management') {
+            return true;
+        }
+
+        // Read defensively: Filament calls this for every registered panel,
+        // including from the topbar on a model that may have been hydrated
+        // without this column (a `select()` that omits it, or a factory that
+        // never set it). Missing must mean "not an admin", not a 500.
+        return $this->hasAttribute('is_admin') && (bool) $this->is_admin;
     }
 
     public function getAppAuthenticationSecret(): ?string

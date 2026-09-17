@@ -15,6 +15,9 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use JohnRivera7\FilamentWidgetGrid\FilamentWidgetGridPlugin;
+use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 
 /**
  * Runs the public-facing site: portfolio content, contact messages and site
@@ -29,6 +32,7 @@ class WebsitePanelProvider extends PanelProvider
             ->default()
             ->id('website')
             ->path('website')
+            ->viteTheme('resources/css/filament/website/theme.css')
             ->brandName('Website')
             ->login()
             ->profile()
@@ -41,12 +45,16 @@ class WebsitePanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Website/Pages'), for: 'App\Filament\Website\Pages')
             ->unsavedChangesAlerts()
             ->discoverWidgets(in: app_path('Filament/Website/Widgets'), for: 'App\Filament\Website\Widgets')
+            ->plugins([
+                EnvironmentIndicatorPlugin::make(),
+                FilamentWidgetGridPlugin::make(),
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
                 AuthenticateSession::class,
-                \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+                ShareErrorsFromSession::class,
                 VerifyCsrfToken::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,

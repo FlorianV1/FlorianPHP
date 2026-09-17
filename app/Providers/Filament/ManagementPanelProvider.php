@@ -15,6 +15,9 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use JohnRivera7\FilamentWidgetGrid\FilamentWidgetGridPlugin;
+use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 
 /**
  * The agency command center: clients, websites, invoicing and the
@@ -28,6 +31,7 @@ class ManagementPanelProvider extends PanelProvider
         return $panel
             ->id('management')
             ->path('management')
+            ->viteTheme('resources/css/filament/website/theme.css')
             ->brandName('Management')
             ->login()
             ->profile()
@@ -40,12 +44,16 @@ class ManagementPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Management/Pages'), for: 'App\Filament\Management\Pages')
             ->unsavedChangesAlerts()
             ->discoverWidgets(in: app_path('Filament/Management/Widgets'), for: 'App\Filament\Management\Widgets')
+            ->plugins([
+                EnvironmentIndicatorPlugin::make(),
+                FilamentWidgetGridPlugin::make(),
+            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,
                 AuthenticateSession::class,
-                \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+                ShareErrorsFromSession::class,
                 VerifyCsrfToken::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,

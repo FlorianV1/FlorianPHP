@@ -240,18 +240,23 @@ body {
 }
 
 /*
- * Carried over verbatim: the button sets `display:flex` at every width, which
- * outranks the `md:hidden` utility it also carries. See the Vite-pass notes —
- * left as-is so this phase stays visual-parity only.
+ * The button carries `md:hidden`, but the old inline `display:flex` outranked
+ * it, so the hamburger was visible on desktop. Scoped to the mobile breakpoint
+ * so the utility wins above it.
  */
 .site-nav__toggle {
     background: none;
     border: none;
     cursor: pointer;
     padding: 4px;
-    display: flex;
     flex-direction: column;
     gap: 5px;
+}
+
+@media (max-width: 767px) {
+    .site-nav__toggle {
+        display: flex;
+    }
 }
 
 .site-nav__bar {
