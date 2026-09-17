@@ -63,10 +63,20 @@ class SkillSeeder extends Seeder
             ['name' => 'Jest', 'icon' => 'devicon-jest-plain', 'url' => 'https://jestjs.io', 'category' => 'testing', 'order' => 2],
         ];
 
+        // Only the technologies currently shown on florianphp.com are active.
+        // The rest stay seeded but switched off, so they remain available in
+        // the panel without appearing on the site.
+        $live = [
+            'Docker', 'PHPUnit', 'Composer', 'PHP', 'MySQL', 'Laravel', 'Filament',
+            'Symfony', 'PostgreSQL', 'Git', 'NPM', 'Node.js', 'MongoDB', 'GitHub',
+            'Vite', 'VS Code', 'HTML5', 'PhpStorm', 'Nginx', 'Tailwind CSS',
+            'CSS3', 'Alpine.js',
+        ];
+
         foreach ($skills as $skill) {
             Skill::updateOrCreate(
                 ['name' => $skill['name']],
-                array_merge($skill, ['is_active' => true])
+                array_merge($skill, ['is_active' => in_array($skill['name'], $live, true)])
             );
         }
     }

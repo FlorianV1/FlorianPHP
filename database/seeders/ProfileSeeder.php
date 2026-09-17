@@ -45,7 +45,7 @@ class ProfileSeeder extends Seeder
 
                 'social_links' => [
                     ['platform' => 'GitHub', 'url' => 'https://github.com/FlorianV1'],
-                    ['platform' => 'LinkedIn', 'url' => 'https://linkedin.com/in/florian'],
+                    ['platform' => 'LinkedIn', 'url' => 'https://linkedin.com/in/floriangeense'],
                     ['platform' => 'Discord', 'url' => 'https://discord.com/users/1138188681308540938'],
                 ],
             ]
