@@ -3,10 +3,13 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
     "license": "MIT",
     "require": {
-        "php": "^8.5",
+        "php": "^8.4",
         "barryvdh/laravel-dompdf": "^3.1",
         "bezhansalleh/filament-panel-switch": "^3.1",
         "bugsnag/bugsnag-laravel": "2.*",
@@ -91,6 +94,9 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.4.15"
         }
     },
     "minimum-stability": "stable",
