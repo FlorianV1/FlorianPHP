@@ -14,6 +14,17 @@ return [
     |
     */
 
+    /*
+    | Browser-side Bugsnag. This key ships to every visitor, so it is not a
+    | secret — but it does differ per environment, and the snippet must not
+    | render at all when it is unset (an empty apiKey makes Bugsnag throw in
+    | the browser). Distinct from the hub's Data Access token in
+    | config/bugsnag-hub.php, and from the server notifier's BUGSNAG_API_KEY.
+    */
+    'bugsnag' => [
+        'browser_key' => env('BUGSNAG_BROWSER_API_KEY'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

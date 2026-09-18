@@ -1,0 +1,17 @@
+@import '../../../vendor/filament/filament/resources/css/theme.css';
+
+/*
+| Shared by both panels — PortfolioPanelProvider and ManagementPanelProvider
+| both point `viteTheme()` here, so Tailwind has to scan both trees. A panel
+| missing from this list renders unstyled.
+*/
+@source '../../../app/Filament/Portfolio/**/*';
+@source '../../../app/Filament/Management/**/*';
+@source '../../../resources/views/filament/**/*';
+
+/*
+| Plugin views. Tailwind only generates the utilities it can see, and this
+| package ships Blade rather than compiled CSS — without this line the panel
+| switcher renders unstyled.
+*/
+@source '../../../vendor/bezhansalleh/filament-panel-switch/resources/views/**/*.blade.php';

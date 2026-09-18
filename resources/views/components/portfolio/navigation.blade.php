@@ -5,41 +5,28 @@
 
 @php
     use App\Models\Settings;
+    use App\Support\SiteBranding;
 
-    $brandText = Settings::get('navbar_brand_text', $profile->name ?? 'florian.dev');
+    $brandPrefix = SiteBranding::get('logo_prefix');
+    $brandText = Settings::get('navbar_brand_text') ?: SiteBranding::get('logo_text');
 
     $links = collect($navbarLinks ?: Settings::get('navbar_links', []))
         ->filter(fn ($link) => ($link['enabled'] ?? true))
         ->values();
+
+    $statusText = $profile->status_text ?? 'available for projects';
 @endphp
 
-<style>
-    @keyframes navDotPulse {
-        0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(134,239,172,0); }
-        50%       { opacity: 0.7; box-shadow: 0 0 0 5px rgba(134,239,172,0.12); }
-    }
-    .nav-dot { animation: navDotPulse 2.5s ease-in-out infinite; }
-    .nav-link {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 12px;
-        color: rgba(255,255,255,0.45);
-        text-decoration: none;
-        letter-spacing: 0.06em;
-        transition: color 0.2s;
-    }
-    .nav-link:hover { color: rgba(255,255,255,1); }
-</style>
-
-<nav style="position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(11,11,13,0.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.07);">
-    <div style="max-width:1152px;margin:0 auto;padding:0 2.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;">
+<nav class="site-nav" aria-label="Main">
+    <div class="site-nav__inner">
 
         {{-- Left: brand --}}
-        <a href="#top" style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:#f1f5f9;text-decoration:none;letter-spacing:-0.01em;">
-            <span style="opacity:0.2;">~/</span>{{ $brandText }}
+        <a href="#top" class="site-nav__brand">
+            <span class="site-nav__brand-prefix">{{ $brandPrefix }}</span>{{ $brandText }}
         </a>
 
         {{-- Center: nav links --}}
-        <div class="hidden md:flex" style="gap:2.25rem;">
+        <div class="site-nav__links hidden md:flex">
             @foreach($links as $link)
                 <a href="{{ $link['url'] ?? '#' }}" class="nav-link">{{ strtolower($link['label'] ?? '') }}</a>
             @endforeach
@@ -48,30 +35,36 @@
         {{-- Right: availability pill --}}
         <div class="hidden md:block">
             @if($profile && $profile->status_available)
-                <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid rgba(255,255,255,0.12);border-radius:4px;">
-                    <span class="nav-dot" style="width:7px;height:7px;border-radius:50%;background:#86efac;flex-shrink:0;display:inline-block;"></span>
-                    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:0.02em;">{{ $profile->status_text ?? 'available for projects' }}</span>
+                <div class="site-nav__pill">
+                    <span class="nav-dot"></span>
+                    <span class="site-nav__status">{{ $statusText }}</span>
                 </div>
             @endif
         </div>
 
         {{-- Mobile hamburger --}}
-        <button id="nav-toggle" class="md:hidden" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;flex-direction:column;gap:5px;" aria-label="Open menu">
-            <span id="nbar1" style="display:block;width:20px;height:1px;background:rgba(255,255,255,0.4);transition:all 0.3s;"></span>
-            <span id="nbar2" style="display:block;width:20px;height:1px;background:rgba(255,255,255,0.4);transition:all 0.3s;"></span>
-            <span id="nbar3" style="display:block;width:20px;height:1px;background:rgba(255,255,255,0.4);transition:all 0.3s;"></span>
+        <button id="nav-toggle"
+                class="site-nav__toggle md:hidden"
+                aria-label="Open menu"
+                aria-controls="nav-mobile"
+                aria-expanded="false">
+            <span id="nbar1" class="site-nav__bar"></span>
+            <span id="nbar2" class="site-nav__bar"></span>
+            <span id="nbar3" class="site-nav__bar"></span>
         </button>
     </div>
 
-    {{-- Mobile menu --}}
-    <div id="nav-mobile" style="display:none;flex-direction:column;padding:1.25rem 2.5rem;gap:1.25rem;border-top:1px solid rgba(255,255,255,0.07);background:rgba(11,11,13,0.98);">
+    {{-- Mobile menu — a second copy of the links and the availability badge.
+         Hidden from assistive tech while closed so screen readers don't hear
+         the navigation twice, and exposed again when it is actually open. --}}
+    <div id="nav-mobile" class="site-nav__mobile" aria-hidden="true">
         @foreach($links as $link)
-            <a href="{{ $link['url'] ?? '#' }}" class="nav-link mobile-nav-link" style="font-size:13px;">{{ strtolower($link['label'] ?? '') }}</a>
+            <a href="{{ $link['url'] ?? '#' }}" class="nav-link mobile-nav-link" tabindex="-1">{{ strtolower($link['label'] ?? '') }}</a>
         @endforeach
         @if($profile && $profile->status_available)
-            <div style="display:flex;align-items:center;gap:8px;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.07);">
-                <span class="nav-dot" style="width:7px;height:7px;border-radius:50%;background:#86efac;display:inline-block;"></span>
-                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);">{{ $profile->status_text ?? 'available for projects' }}</span>
+            <div class="site-nav__mobile-status">
+                <span class="nav-dot"></span>
+                <span class="site-nav__status">{{ $statusText }}</span>
             </div>
         @endif
     </div>
@@ -89,6 +82,17 @@
     function setOpen(v) {
         open = v;
         menu.style.display = open ? 'flex' : 'none';
+
+        // Keep the duplicate out of the accessibility tree while it is closed,
+        // and make its links unreachable by keyboard at the same time.
+        menu.setAttribute('aria-hidden', open ? 'false' : 'true');
+        menu.querySelectorAll('.mobile-nav-link').forEach(l => {
+            if (open) { l.removeAttribute('tabindex'); } else { l.setAttribute('tabindex', '-1'); }
+        });
+
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+
         b1.style.transform = open ? 'translateY(6px) rotate(45deg)' : '';
         b2.style.opacity   = open ? '0' : '1';
         b3.style.transform = open ? 'translateY(-6px) rotate(-45deg)' : '';

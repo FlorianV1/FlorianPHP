@@ -20,7 +20,7 @@ class ProfileSeeder extends Seeder
                 'status_available' => true,
                 'email' => 'florian.geense@gmail.com',
                 'location' => 'Netherlands',
-                'location_timezone' => 'UTC+1 / CET',
+                'location_timezone' => 'Europe/Amsterdam (CET/CEST)',
 
                 'hero_cta_primary_label' => 'View my work',
                 'hero_cta_primary_url' => '#projects',
@@ -29,11 +29,11 @@ class ProfileSeeder extends Seeder
 
                 'contact_intro' => "If you want to talk about work, collaboration, or just an idea — I'm all ears. I typically respond within 24 hours.",
 
-                'stat_1_value' => '2.0',
-                'stat_1_label' => 'Current Projects',
+                'stat_1_value' => '2',
+                'stat_1_label' => 'Current projects',
                 'stat_2_value' => '1+ year',
-                'stat_2_label' => 'FilamentPHP Expierence',
-                'stat_3_value' => '2+ year',
+                'stat_2_label' => 'FilamentPHP experience',
+                'stat_3_value' => '2+ years',
                 'stat_3_label' => 'Development experience',
 
                 'about_stack_primary' => 'PHP / Laravel',
@@ -45,7 +45,7 @@ class ProfileSeeder extends Seeder
 
                 'social_links' => [
                     ['platform' => 'GitHub', 'url' => 'https://github.com/FlorianV1'],
-                    ['platform' => 'LinkedIn', 'url' => 'https://linkedin.com/in/florian'],
+                    ['platform' => 'LinkedIn', 'url' => 'https://linkedin.com/in/floriangeense'],
                     ['platform' => 'Discord', 'url' => 'https://discord.com/users/1138188681308540938'],
                 ],
             ]

@@ -9,22 +9,34 @@ use App\Models\NowItem;
 use App\Models\PageView;
 use App\Models\Profile;
 use App\Models\Project;
+use App\Models\Service;
 use App\Models\Settings;
 use App\Models\Skill;
+use App\Models\Stat;
+use App\Models\Testimonial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\HttpFoundation\Response;
 
 class PortfolioController extends Controller
 {
     public function index(Request $request)
     {
-        $this->trackPageView($request);
+        $this->trackPageView($request, '/');
 
-        $profile     = Profile::first();
-        $nowItems    = NowItem::active()->ordered()->get();
-        $projects    = Project::ongoing()->ordered()->get();
-        $experiences = Experience::active()->ordered()->get();
-        $skills      = Skill::active()->ordered()->get();
+        $profile = Profile::first();
+        $nowItems = NowItem::active()->ordered()->get();
+
+        // Visibility is `is_posted`. This used to filter on `is_ongoing`, which
+        // meant a finished project silently vanished from the site.
+        $projects = Project::posted()->ordered()->get();
+
+        $experiences = Experience::active()->work()->ordered()->get();
+        $education = Experience::active()->education()->ordered()->get();
+        $skills = Skill::active()->ordered()->get();
+        $services = Service::active()->ordered()->get();
+        $testimonials = Testimonial::active()->ordered()->with('project')->get();
+        $stats = Stat::active()->ordered()->get();
 
         // THEME / COLORS
         $colors = Settings::get('custom_colors', [
@@ -43,15 +55,16 @@ class PortfolioController extends Controller
         // SECTIONS ORDER – if nothing saved yet, use a default
         $sectionsOrder = Settings::get('sections_order', null);
         if (! is_array($sectionsOrder) || empty($sectionsOrder)) {
-            $sectionsOrder = [
-                ['section' => 'hero',       'enabled' => true],
-                ['section' => 'now',        'enabled' => true],
-                ['section' => 'projects',   'enabled' => true],
-                ['section' => 'experience', 'enabled' => true],
-                ['section' => 'skills',     'enabled' => true],
-                ['section' => 'about',      'enabled' => true],
-                ['section' => 'contact',    'enabled' => true],
-            ];
+            $sectionsOrder = self::defaultSectionsOrder();
+        }
+
+        // Sections added after a site was first configured are absent from the
+        // stored order; append them so new content is never invisible.
+        $stored = collect($sectionsOrder)->pluck('section')->all();
+        foreach (self::defaultSectionsOrder() as $default) {
+            if (! in_array($default['section'], $stored, true)) {
+                $sectionsOrder[] = $default;
+            }
         }
 
         // NAVBAR LINKS – fallback if no settings yet
@@ -67,7 +80,11 @@ class PortfolioController extends Controller
             'nowItems'         => $nowItems,
             'projects'         => $projects,
             'experiences'      => $experiences,
+            'education'        => $education,
             'skills'           => $skills,
+            'services'         => $services,
+            'testimonials'     => $testimonials,
+            'stats'            => $stats,
             'colors'           => $colors,
             'overlay'          => $overlay,
             'overlayIntensity' => $overlayIntensity,
@@ -76,7 +93,48 @@ class PortfolioController extends Controller
         ]);
     }
 
-    private function trackPageView(Request $request): void
+    /**
+     * Case-study page for a single project. There is no `has_case_study` flag —
+     * a case study exists exactly when a posted project has a body.
+     */
+    public function caseStudy(Request $request, Project $project)
+    {
+        abort_unless($project->hasCaseStudy(), Response::HTTP_NOT_FOUND);
+
+        $this->trackPageView($request, '/work/' . $project->slug);
+
+        $profile = Profile::first();
+
+        return view('case-study', [
+            'profile'      => $profile,
+            'project'      => $project,
+            'testimonials' => $project->testimonials()->where('is_active', true)->orderBy('sort_order')->get(),
+            'related'      => Project::posted()
+                ->whereKeyNot($project->getKey())
+                ->ordered()
+                ->take(3)
+                ->get(),
+            'colors'       => Settings::get('custom_colors', []),
+        ]);
+    }
+
+    public static function defaultSectionsOrder(): array
+    {
+        return [
+            ['section' => 'hero',         'enabled' => true],
+            ['section' => 'services',     'enabled' => true],
+            ['section' => 'now',          'enabled' => true],
+            ['section' => 'projects',     'enabled' => true],
+            ['section' => 'testimonials', 'enabled' => true],
+            ['section' => 'experience',   'enabled' => true],
+            ['section' => 'education',    'enabled' => true],
+            ['section' => 'skills',       'enabled' => true],
+            ['section' => 'about',        'enabled' => true],
+            ['section' => 'contact',      'enabled' => true],
+        ];
+    }
+
+    private function trackPageView(Request $request, string $page): void
     {
         $ip = $request->ip();
 
@@ -91,7 +149,7 @@ class PortfolioController extends Controller
         }
 
         PageView::create([
-            'page'       => '/',
+            'page'       => $page,
             'ip'         => $ip,
             'user_agent' => substr($ua, 0, 255),
             'referrer'   => $request->header('referer'),

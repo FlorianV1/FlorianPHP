@@ -8,11 +8,21 @@
     'nowItems' => null,
     'projects' => null,
     'experiences' => null,
+    'education' => null,
     'skills' => null,
+    'services' => null,
+    'testimonials' => null,
+    'stats' => null,
+    'seoTitle' => null,
+    'seoDescription' => null,
+    'seoType' => 'website',
+    'seoImage' => null,
+    'seoPerson' => null,
 ])
 
 @php
     use App\Models\Settings;
+    use App\Support\SiteBranding;
     use Illuminate\Support\Facades\Storage;
 
     $favicon = Settings::get('favicon');
@@ -25,7 +35,7 @@
         'text_primary'   => '#E7EAF0',
         'text_secondary' => '#A8ACB3',
         'text_muted'     => '#6F737A',
-    ], $colors ?? []);
+    ], $colors ?: []);
 @endphp
 
     <!DOCTYPE html>
@@ -34,32 +44,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{{ $profile->name ?? 'Florian' }} - {{ $profile->role ?? 'Software Developer' }}</title>
-    <meta name="description" content="{{ $profile->tagline ?? '' }}">
-    <meta property="og:title" content="{{ $profile->name ?? 'Florian' }} - {{ $profile->role ?? 'Software Developer' }}">
-    <meta property="og:description" content="{{ $profile->tagline ?? '' }}">
+    <x-portfolio.seo
+        :title="$seoTitle ?? SiteBranding::title($profile)"
+        :description="$seoDescription ?? SiteBranding::metaDescription($profile)"
+        :type="$seoType"
+        :image="$seoImage"
+        :person="$seoPerson"
+    />
 
-    {{-- Bugsnag --}}
-    <script src="//d2wy8f7a9ursnm.cloudfront.net/v8/bugsnag.min.js"></script>
-    <script type="module">
-        import BugsnagPerformance from '//d2wy8f7a9ursnm.cloudfront.net/v1/bugsnag-performance.min.js'
-        Bugsnag.start({ apiKey: '1d5f0db939c8f8209f8a37107ddd2f2a' })
-        BugsnagPerformance.start({ apiKey: '1d5f0db939c8f8209f8a37107ddd2f2a' })
-    </script>
+    {{-- Bugsnag: only when a browser key is configured --}}
+    @if ($bugsnagBrowserKey = config('services.bugsnag.browser_key'))
+        <script src="//d2wy8f7a9ursnm.cloudfront.net/v8/bugsnag.min.js"></script>
+        <script type="module">
+            import BugsnagPerformance from '//d2wy8f7a9ursnm.cloudfront.net/v1/bugsnag-performance.min.js'
+            Bugsnag.start({ apiKey: @json($bugsnagBrowserKey) })
+            BugsnagPerformance.start({ apiKey: @json($bugsnagBrowserKey) })
+        </script>
+    @endif
 
-    {{-- Favicon --}}
+    {{-- Favicon: a CMS upload wins, otherwise the FlorianPHP mark. --}}
     @if($favicon)
         <link rel="icon" type="image/png" href="{{ Storage::url($favicon) }}">
     @else
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/brand/favicon-32.png') }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/brand/icon-192.png') }}">
         <link rel="alternate icon" href="/favicon.ico">
     @endif
 
-    {{-- Devicons --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
-
-    {{-- Tailwind CDN --}}
-    <script src="https://cdn.tailwindcss.com"></script>
+    {{-- Home-screen icon: always the mark, never the CMS favicon (which is
+         sized for a browser tab and would look rough at 180px). --}}
+    <link rel="apple-touch-icon" href="{{ asset('images/brand/apple-touch-icon.png') }}">
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -69,32 +83,12 @@
         rel="stylesheet"
     >
 
-    {{-- Tailwind config with CSS variables --}}
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'app-bg': 'var(--app-bg)',
-                        'surface': 'var(--surface)',
-                        'accent': 'var(--accent)',
-                        'accent-hover': 'var(--accent-hover)',
-                        'text-primary': 'var(--text-primary)',
-                        'text-secondary': 'var(--text-secondary)',
-                        'text-muted': 'var(--text-muted)',
-                        success: '#42D881',
-                        error: '#E04F4F',
-                    },
-                    fontFamily: {
-                        sans: ['JetBrains Mono', 'monospace'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                        display: ['Syne', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
+    {{-- Compiled stylesheet (Tailwind + portfolio components).
+         CSS only — the portfolio ships no bundled JS, and resources/js/app.js
+         is just axios, which nothing on this page uses. --}}
+    @vite('resources/css/app.css')
 
+    {{-- Palette from Settings — the only styling that has to stay per-request. --}}
     <style>
         :root {
             --app-bg: {{ $colors['app_bg'] }};
@@ -107,16 +101,6 @@
             --bg: {{ $colors['app_bg'] }};
             --bg2: {{ $colors['surface'] }};
         }
-
-        *, *::before, *::after { box-sizing: border-box; }
-
-        body {
-            background-color: var(--app-bg);
-            color: #f1f5f9;
-            font-family: 'JetBrains Mono', monospace;
-            margin: 0;
-            overflow-x: hidden;
-        }
     </style>
 </head>
 
@@ -125,46 +109,61 @@
       data-overlay="{{ $overlay }}"
       data-overlay-intensity="{{ $overlayIntensity }}">
 
+<a href="#main" class="skip-link">Skip to content</a>
+
 {{-- NAVBAR (reads brand + colors from Settings, links from prop/settings) --}}
 <x-portfolio.navigation
     :profile="$profile"
     :navbarLinks="$navbarLinks"
 />
 
-{{-- DYNAMIC SECTIONS VIA COMPONENTS --}}
-<main>
-    @foreach($sectionsOrder ?? [] as $section)
-        @php
-            $key = $section['section'] ?? null;
-            $enabled = $section['enabled'] ?? false;
-        @endphp
+<main id="main">
+    @if(trim($slot) !== '')
+        {{ $slot }}
+    @else
+        {{-- DYNAMIC SECTIONS VIA COMPONENTS --}}
+        @foreach($sectionsOrder ?? [] as $section)
+            @php
+                $key = $section['section'] ?? null;
+                $enabled = $section['enabled'] ?? false;
+            @endphp
 
-        @if(! $enabled || ! $key)
-            @continue
-        @endif
+            @if(! $enabled || ! $key)
+                @continue
+            @endif
 
-        @if($key === 'hero')
-            <x-portfolio.hero :profile="$profile" :skills="$skills" :projects="$projects" />
+            @if($key === 'hero')
+                <x-portfolio.hero :profile="$profile" :skills="$skills" :projects="$projects" />
 
-        @elseif($key === 'now')
-            <x-portfolio.now :items="$nowItems" />
+            @elseif($key === 'services')
+                <x-portfolio.services :services="$services" />
 
-        @elseif($key === 'projects')
-            <x-portfolio.projects :projects="$projects" />
+            @elseif($key === 'now')
+                <x-portfolio.now :items="$nowItems" />
 
-        @elseif($key === 'experience')
-            <x-portfolio.experience :experiences="$experiences" />
+            @elseif($key === 'projects')
+                <x-portfolio.projects :projects="$projects" />
 
-        @elseif($key === 'skills')
-            <x-portfolio.skills-marquee :skills="$skills" />
+            @elseif($key === 'testimonials')
+                <x-portfolio.testimonials :testimonials="$testimonials" />
 
-        @elseif($key === 'about')
-            <x-portfolio.about :profile="$profile" />
+            @elseif($key === 'experience')
+                <x-portfolio.experience :experiences="$experiences" />
 
-        @elseif($key === 'contact')
-            <x-portfolio.contact :profile="$profile" />
-        @endif
-    @endforeach
+            @elseif($key === 'education')
+                <x-portfolio.education :education="$education" />
+
+            @elseif($key === 'skills')
+                <x-portfolio.skills-marquee :skills="$skills" />
+
+            @elseif($key === 'about')
+                <x-portfolio.about :profile="$profile" :stats="$stats" />
+
+            @elseif($key === 'contact')
+                <x-portfolio.contact :profile="$profile" />
+            @endif
+        @endforeach
+    @endif
 </main>
 
 {{-- FOOTER --}}
@@ -182,12 +181,8 @@
         if (type === 'snow') {
             const layer = document.createElement('div');
             layer.id = 'overlay-snow';
-            layer.style.position = 'fixed';
-            layer.style.pointerEvents = 'none';
-            layer.style.inset = '0';
-            layer.style.zIndex = '50';
+            layer.className = 'overlay-layer';
             layer.style.backgroundImage = 'url(/overlays/snow.gif)';
-            layer.style.backgroundSize = 'cover';
             layer.style.opacity = String(Math.min(Math.max(intensity / 100, 0.1), 1));
             document.body.appendChild(layer);
         }

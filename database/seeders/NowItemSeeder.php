@@ -13,7 +13,7 @@ class NowItemSeeder extends Seeder
 
         $items = [
             [
-                'description' => 'Building this portfolio CMS with Laravel, Filament v4, and a fully custom Blade frontend.',
+                'description' => 'Starting up my own Software Company',
                 'order'       => 1,
                 'is_active'   => true,
             ],
@@ -28,7 +28,7 @@ class NowItemSeeder extends Seeder
                 'is_active'   => true,
             ],
             [
-                'description' => 'Finishing up school',
+                'description' => 'Building this portfolio CMS with Laravel, Filament v4, and a fully custom Blade frontend.',
                 'order'       => 4,
                 'is_active'   => true,
             ],
