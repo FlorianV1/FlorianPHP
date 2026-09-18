@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Database\Factories\SiteBridgeClaimCodeFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,13 +16,27 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * client site redeems (via `site-bridge:claim`) for a long-lived key.
  *
  * @property string $code_hash
- * @property \Carbon\CarbonImmutable $expires_at
- * @property \Carbon\CarbonImmutable|null $claimed_at
+ * @property CarbonImmutable $expires_at
+ * @property CarbonImmutable|null $claimed_at
  */
 final class SiteBridgeClaimCode extends Model
 {
     /** @use HasFactory<SiteBridgeClaimCodeFactory> */
     use HasFactory;
+
+    /**
+     * Every column except the key and timestamps. Written only by the
+     * heartbeat and enrolment services, never from request input, but listed
+     * explicitly so a new column has to be opted in deliberately.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'website_id',
+        'code_hash',
+        'expires_at',
+        'claimed_at',
+    ];
 
     /** @return BelongsTo<Website, $this> */
     public function website(): BelongsTo

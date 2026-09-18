@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Database\Factories\SiteBridgeKeyFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,14 +19,32 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $key_prefix
  * @property string|null $first_seen_domain
  * @property string|null $last_seen_domain
- * @property \Carbon\CarbonImmutable|null $domain_mismatch_at
- * @property \Carbon\CarbonImmutable|null $last_used_at
- * @property \Carbon\CarbonImmutable|null $revoked_at
+ * @property CarbonImmutable|null $domain_mismatch_at
+ * @property CarbonImmutable|null $last_used_at
+ * @property CarbonImmutable|null $revoked_at
  */
 final class SiteBridgeKey extends Model
 {
     /** @use HasFactory<SiteBridgeKeyFactory> */
     use HasFactory;
+
+    /**
+     * Every column except the key and timestamps. Written only by the
+     * heartbeat and enrolment services, never from request input, but listed
+     * explicitly so a new column has to be opted in deliberately.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'website_id',
+        'key_hash',
+        'key_prefix',
+        'first_seen_domain',
+        'last_seen_domain',
+        'domain_mismatch_at',
+        'last_used_at',
+        'revoked_at',
+    ];
 
     /** @return BelongsTo<Website, $this> */
     public function website(): BelongsTo

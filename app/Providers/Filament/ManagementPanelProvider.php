@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -16,8 +17,6 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use JohnRivera7\FilamentWidgetGrid\FilamentWidgetGridPlugin;
-use pxlrbt\FilamentEnvironmentIndicator\EnvironmentIndicatorPlugin;
 
 /**
  * The agency command center: clients, websites, invoicing and the
@@ -31,10 +30,23 @@ class ManagementPanelProvider extends PanelProvider
         return $panel
             ->id('management')
             ->path('management')
-            ->viteTheme('resources/css/filament/website/theme.css')
+            ->viteTheme('resources/css/filament/theme.css')
             ->brandName('Management')
+            // One company mark across all panels; the panel name beside it is
+            // what tells them apart. The mark is navy on transparent, so it
+            // needs a lifted variant to stay visible on a dark sidebar.
+            ->brandLogo(fn () => view('filament.brand', ['icon' => 'icon-192.png']))
+            ->darkModeBrandLogo(fn () => view('filament.brand', ['icon' => 'icon-192-dark.png', 'dark' => true]))
+            ->brandLogoHeight('1.75rem')
+            ->favicon(asset('images/brand/favicon-32.png'))
             ->login()
             ->profile()
+            // Authenticator-app MFA with recovery codes. Opt-in per user from the
+            // profile page; not forced, so an admin cannot lock themselves out
+            // of the only account.
+            ->multiFactorAuthentication([
+                AppAuthentication::make()->recoverable(),
+            ])
             ->sidebarCollapsibleOnDesktop()
             ->spa()
             ->colors([
@@ -44,10 +56,6 @@ class ManagementPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Management/Pages'), for: 'App\Filament\Management\Pages')
             ->unsavedChangesAlerts()
             ->discoverWidgets(in: app_path('Filament/Management/Widgets'), for: 'App\Filament\Management\Widgets')
-            ->plugins([
-                EnvironmentIndicatorPlugin::make(),
-                FilamentWidgetGridPlugin::make(),
-            ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -64,7 +72,7 @@ class ManagementPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
-                    ->label('Clients')
+                    ->label('CRM')
                     ->collapsible(false),
                 NavigationGroup::make()
                     ->label('Billing')

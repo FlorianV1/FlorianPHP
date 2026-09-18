@@ -1,5 +1,5 @@
 User-agent: *
-Disallow: /website
+Disallow: /portfolio
 Disallow: /management
 
 Sitemap: https://florianphp.com/sitemap.xml

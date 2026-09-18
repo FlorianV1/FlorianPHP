@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\ClientStatus;
 use App\Enums\InvoiceStatus;
+use Carbon\CarbonImmutable;
 use Database\Factories\ClientFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,12 +18,36 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property ClientStatus $status
  * @property ClientStatus|null $status_before_lock
  * @property numeric-string|null $hourly_rate
- * @property \Carbon\CarbonImmutable|null $onboarded_at
+ * @property CarbonImmutable|null $onboarded_at
  */
 final class Client extends Model
 {
     /** @use HasFactory<ClientFactory> */
     use HasFactory, LogsActivity;
+
+    /**
+     * Every column except the key and timestamps. These models are reached
+     * only through the admin panel and internal services, never from request
+     * input, but they are listed explicitly rather than unguarded so that a
+     * new column has to be opted in deliberately.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'company_name',
+        'contact_name',
+        'contact_email',
+        'contact_phone',
+        'vat_number',
+        'registration_number',
+        'billing_address',
+        'notes',
+        'status',
+        'status_before_lock',
+        'hourly_rate',
+        'currency',
+        'onboarded_at',
+    ];
 
     /** @return HasMany<Website, $this> */
     public function websites(): HasMany

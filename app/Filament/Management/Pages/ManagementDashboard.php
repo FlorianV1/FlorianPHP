@@ -2,23 +2,27 @@
 
 namespace App\Filament\Management\Pages;
 
+use App\Filament\Management\Widgets\FinanceStatsWidget;
 use App\Filament\Management\Widgets\LeadsOverviewWidget;
 use App\Filament\Management\Widgets\LeadsTrendChart;
 use App\Filament\Management\Widgets\RecentLeadsWidget;
+use App\Filament\Management\Widgets\RevenueChartWidget;
+use App\Filament\Management\Widgets\ShouldInvoiceWidget;
+use App\Filament\Management\Widgets\SiteHealthWidget;
+use App\Filament\Management\Widgets\UninvoicedWorkWidget;
 use BackedEnum;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Support\Enums\Width;
-use JohnRivera7\FilamentWidgetGrid\Concerns\HasWidgetGrid;
 
 /**
- * Home page of the Management panel. Until the agency domain (clients,
- * websites, invoicing) is ported across, the one real business dataset here
- * is the inbound pipeline, so that is what this shows.
+ * Home page of the Management panel: the agency back office at a glance.
+ *
+ * Ordered by what it asks of the reader — money owed and work that needs
+ * invoicing first, then anything on fire, then the trends and the inbound
+ * pipeline. The explicit list wins over each widget's `$sort`.
  */
 class ManagementDashboard extends BaseDashboard
 {
-    use HasWidgetGrid;
-
     protected static string $routePath = '/';
 
     protected static ?string $title = 'Overview';
@@ -29,10 +33,18 @@ class ManagementDashboard extends BaseDashboard
 
     protected static ?int $navigationSort = -10;
 
+    /**
+     * @return array<int, class-string>
+     */
     public function getWidgets(): array
     {
         return [
+            FinanceStatsWidget::class,
             LeadsOverviewWidget::class,
+            ShouldInvoiceWidget::class,
+            UninvoicedWorkWidget::class,
+            SiteHealthWidget::class,
+            RevenueChartWidget::class,
             LeadsTrendChart::class,
             RecentLeadsWidget::class,
         ];

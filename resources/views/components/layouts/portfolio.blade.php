@@ -52,21 +52,28 @@
         :person="$seoPerson"
     />
 
-    {{-- Bugsnag --}}
-    <script src="//d2wy8f7a9ursnm.cloudfront.net/v8/bugsnag.min.js"></script>
-    <script type="module">
-        import BugsnagPerformance from '//d2wy8f7a9ursnm.cloudfront.net/v1/bugsnag-performance.min.js'
-        Bugsnag.start({ apiKey: '1d5f0db939c8f8209f8a37107ddd2f2a' })
-        BugsnagPerformance.start({ apiKey: '1d5f0db939c8f8209f8a37107ddd2f2a' })
-    </script>
+    {{-- Bugsnag: only when a browser key is configured --}}
+    @if ($bugsnagBrowserKey = config('services.bugsnag.browser_key'))
+        <script src="//d2wy8f7a9ursnm.cloudfront.net/v8/bugsnag.min.js"></script>
+        <script type="module">
+            import BugsnagPerformance from '//d2wy8f7a9ursnm.cloudfront.net/v1/bugsnag-performance.min.js'
+            Bugsnag.start({ apiKey: @json($bugsnagBrowserKey) })
+            BugsnagPerformance.start({ apiKey: @json($bugsnagBrowserKey) })
+        </script>
+    @endif
 
-    {{-- Favicon --}}
+    {{-- Favicon: a CMS upload wins, otherwise the FlorianPHP mark. --}}
     @if($favicon)
         <link rel="icon" type="image/png" href="{{ Storage::url($favicon) }}">
     @else
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/brand/favicon-32.png') }}">
+        <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/brand/icon-192.png') }}">
         <link rel="alternate icon" href="/favicon.ico">
     @endif
+
+    {{-- Home-screen icon: always the mark, never the CMS favicon (which is
+         sized for a browser tab and would look rough at 180px). --}}
+    <link rel="apple-touch-icon" href="{{ asset('images/brand/apple-touch-icon.png') }}">
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">

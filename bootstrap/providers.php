@@ -1,8 +1,13 @@
 <?php
 
+use App\Providers\AppServiceProvider;
+use App\Providers\Filament\ManagementPanelProvider;
+use App\Providers\Filament\PortfolioPanelProvider;
+use Bugsnag\BugsnagLaravel\BugsnagServiceProvider;
+
 return [
-    Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
-    App\Providers\AppServiceProvider::class,
-    App\Providers\Filament\WebsitePanelProvider::class,
-    App\Providers\Filament\ManagementPanelProvider::class,
+    BugsnagServiceProvider::class,
+    AppServiceProvider::class,
+    PortfolioPanelProvider::class,
+    ManagementPanelProvider::class,
 ];

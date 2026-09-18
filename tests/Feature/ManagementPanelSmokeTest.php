@@ -1,8 +1,12 @@
 <?php
 
+use App\Filament\Management\Pages\ManagementDashboard;
 use App\Filament\Management\Widgets\LeadsOverviewWidget;
+use App\Filament\Management\Widgets\LeadsTrendChart;
+use App\Filament\Management\Widgets\RecentLeadsWidget;
 use App\Models\ContactMessage;
 use App\Models\User;
+use Livewire\Livewire;
 
 /**
  * The Management panel is being populated with the agency command center.
@@ -19,10 +23,10 @@ it('registers the management panel', function () {
 });
 
 it('keeps the two panels separate', function () {
-    $websiteResources = filament()->getPanel('website')->getResources();
+    $portfolioResources = filament()->getPanel('portfolio')->getResources();
     $managementResources = filament()->getPanel('management')->getResources();
 
-    expect(array_intersect($websiteResources, $managementResources))->toBeEmpty();
+    expect(array_intersect($portfolioResources, $managementResources))->toBeEmpty();
 });
 
 it('serves the management login to a guest', function () {
@@ -67,19 +71,27 @@ it('shows the inbound pipeline on the dashboard', function () {
         'is_spam' => true,
     ]);
 
-    $page = $this->get('/management');
+    // Widgets lazy-load, so the dashboard response carries placeholders and
+    // the real content arrives over Livewire. Assert the wiring on the page
+    // and the numbers on the components themselves.
+    $this->get('/management')->assertSuccessful();
 
-    $page->assertSuccessful()
+    expect(Livewire::test(ManagementDashboard::class)->instance()->getWidgets())
+        ->toContain(LeadsOverviewWidget::class, LeadsTrendChart::class, RecentLeadsWidget::class);
+
+    Livewire::test(LeadsOverviewWidget::class)
         ->assertSee('Unread leads')
-        ->assertSee('Spam blocked')
-        ->assertSee('Latest enquiries');
+        ->assertSee('Spam blocked');
 
     // The quarantined message must be counted, never listed.
-    $page->assertDontSee('Spam Bot');
+    Livewire::test(RecentLeadsWidget::class)
+        ->assertSee('Latest enquiries')
+        ->assertSee('Jane Prospect')
+        ->assertDontSee('Spam Bot');
 });
 
 it('does not leak management widgets into the website panel', function () {
-    $websiteWidgets = filament()->getPanel('website')->getWidgets();
+    $portfolioWidgets = filament()->getPanel('portfolio')->getWidgets();
 
-    expect($websiteWidgets)->not->toContain(LeadsOverviewWidget::class);
+    expect($portfolioWidgets)->not->toContain(LeadsOverviewWidget::class);
 });

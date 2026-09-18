@@ -80,14 +80,17 @@ it('derives website health status', function () {
     expect($website->healthStatus())->toBe('green');
 });
 
-it('gates the management panel on the admin flag', function () {
+it('gates every panel on the admin flag', function () {
     $admin = User::factory()->create(['is_admin' => true]);
     $plain = User::factory()->create(['is_admin' => false]);
 
     $management = filament()->getPanel('management');
-    $website = filament()->getPanel('website');
+    $portfolio = filament()->getPanel('portfolio');
 
+    // Panel access is the only authorization boundary here — see
+    // PanelSecurityTest for the full matrix.
     expect($admin->canAccessPanel($management))->toBeTrue()
+        ->and($admin->canAccessPanel($portfolio))->toBeTrue()
         ->and($plain->canAccessPanel($management))->toBeFalse()
-        ->and($plain->canAccessPanel($website))->toBeTrue();
+        ->and($plain->canAccessPanel($portfolio))->toBeFalse();
 });

@@ -50,13 +50,13 @@ class RecentLeadsWidget extends TableWidget
                     ->color(fn (ContactMessage $record): string => $record->isRead() ? 'gray' : 'warning'),
             ])
             ->recordActions([
-                // The inbox itself lives in the Website panel, so this crosses
+                // The inbox itself lives in the Portfolio panel, so this crosses
                 // panels deliberately rather than duplicating the resource.
                 Action::make('open')
                     ->label('Open')
                     ->icon('heroicon-m-arrow-top-right-on-square')
                     ->url(fn (ContactMessage $record): string => route(
-                        'filament.website.resources.messages.view',
+                        'filament.portfolio.resources.messages.view',
                         ['record' => $record],
                     )),
             ]);

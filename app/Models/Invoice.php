@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\InvoiceStatus;
+use Carbon\CarbonImmutable;
 use Database\Factories\InvoiceFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,9 +21,9 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property numeric-string $vat_rate
  * @property numeric-string $vat_amount
  * @property numeric-string $total
- * @property \Carbon\CarbonImmutable $issue_date
- * @property \Carbon\CarbonImmutable $due_date
- * @property \Carbon\CarbonImmutable|null $paid_at
+ * @property CarbonImmutable $issue_date
+ * @property CarbonImmutable $due_date
+ * @property CarbonImmutable|null $paid_at
  */
 final class Invoice extends Model
 {
@@ -72,6 +73,30 @@ final class Invoice extends Model
             'vat_rate' => self::DEFAULT_VAT_RATE,
         ]);
     }
+
+    /**
+     * Every column except the key and timestamps. These models are reached
+     * only through the admin panel and internal services, never from request
+     * input, but they are listed explicitly rather than unguarded so that a
+     * new column has to be opted in deliberately.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'client_id',
+        'website_id',
+        'number',
+        'issue_date',
+        'due_date',
+        'status',
+        'subtotal',
+        'vat_rate',
+        'vat_amount',
+        'total',
+        'paid_at',
+        'external_reference',
+        'notes',
+    ];
 
     /** @return BelongsTo<Client, $this> */
     public function client(): BelongsTo

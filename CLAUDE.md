@@ -93,8 +93,8 @@ if the manifest is missing, every page 500s with `Unable to locate file in Vite 
 - Descriptive names: `isRegisteredForDiscounts`, not `discount()`.
 - Curly braces always; constructor property promotion; explicit return types and param hints.
 - TitleCase enum keys. PHPDoc over inline comments, with array shapes where useful.
-- Don't add dependencies or new base folders without asking.
-- Don't create documentation files unless asked.
+- Create files, folders and documentation as the work needs them — no need to ask first.
+- Still ask before adding a Composer or npm dependency.
 
 ## Testing
 

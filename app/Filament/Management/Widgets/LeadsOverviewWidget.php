@@ -16,6 +16,13 @@ class LeadsOverviewWidget extends StatsOverviewWidget
 
     protected int|string|array $columnSpan = 'full';
 
+    /**
+     * Filament polls stats widgets every 5s by default, but counts move when a human fills in the contact form,
+     * so the dashboard was re-running these queries twelve times a minute
+     * for a number that had not changed.
+     */
+    protected ?string $pollingInterval = null;
+
     protected function getStats(): array
     {
         // The model hides spam by default, so these counts are genuine leads.

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Database\Factories\SiteBridgeHeartbeatFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * status/metrics snapshot lives on the website's `health` column.
  *
  * @property int|null $reported_lock_level
- * @property \Carbon\CarbonImmutable $received_at
+ * @property CarbonImmutable $received_at
  */
 final class SiteBridgeHeartbeat extends Model
 {
@@ -38,6 +39,22 @@ final class SiteBridgeHeartbeat extends Model
             now()->subDays((int) config('site-bridge.heartbeat.retention_days', 14)),
         );
     }
+
+    /**
+     * Every column except the key and timestamps. Written only by the
+     * heartbeat and enrolment services, never from request input, but listed
+     * explicitly so a new column has to be opted in deliberately.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'website_id',
+        'site_bridge_key_id',
+        'ip',
+        'domain',
+        'reported_lock_level',
+        'received_at',
+    ];
 
     /** @return BelongsTo<Website, $this> */
     public function website(): BelongsTo

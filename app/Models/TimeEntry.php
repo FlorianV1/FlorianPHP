@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Database\Factories\TimeEntryFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property \Carbon\CarbonImmutable $work_date
+ * @property CarbonImmutable $work_date
  * @property numeric-string $hours
  * @property numeric-string|null $hourly_rate
  */
@@ -19,6 +20,24 @@ final class TimeEntry extends Model
 {
     /** @use HasFactory<TimeEntryFactory> */
     use HasFactory;
+
+    /**
+     * Every column except the key and timestamps. These models are reached
+     * only through the admin panel and internal services, never from request
+     * input, but they are listed explicitly rather than unguarded so that a
+     * new column has to be opted in deliberately.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'client_id',
+        'website_id',
+        'invoice_line_id',
+        'work_date',
+        'hours',
+        'description',
+        'hourly_rate',
+    ];
 
     /** @return BelongsTo<Client, $this> */
     public function client(): BelongsTo

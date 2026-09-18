@@ -14,6 +14,22 @@ final class InvoiceLine extends Model
     /** @use HasFactory<InvoiceLineFactory> */
     use HasFactory;
 
+    /**
+     * Every column except the key and timestamps. These models are reached
+     * only through the admin panel and internal services, never from request
+     * input, but they are listed explicitly rather than unguarded so that a
+     * new column has to be opted in deliberately.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'invoice_id',
+        'description',
+        'quantity',
+        'unit_price',
+        'amount',
+    ];
+
     /** @return BelongsTo<Invoice, $this> */
     public function invoice(): BelongsTo
     {

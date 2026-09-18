@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\RetainerInterval;
+use Carbon\CarbonImmutable;
 use Database\Factories\RetainerFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,13 +14,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property RetainerInterval $interval
  * @property numeric-string $amount
- * @property \Carbon\CarbonImmutable $next_due_date
+ * @property CarbonImmutable $next_due_date
  * @property bool $active
  */
 final class Retainer extends Model
 {
     /** @use HasFactory<RetainerFactory> */
     use HasFactory;
+
+    /**
+     * Every column except the key and timestamps. These models are reached
+     * only through the admin panel and internal services, never from request
+     * input, but they are listed explicitly rather than unguarded so that a
+     * new column has to be opted in deliberately.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'client_id',
+        'website_id',
+        'description',
+        'amount',
+        'interval',
+        'next_due_date',
+        'active',
+    ];
 
     /** @return BelongsTo<Client, $this> */
     public function client(): BelongsTo

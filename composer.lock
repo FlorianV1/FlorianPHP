@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d2704e85f4da9ba02b40d1bae60771d3",
+    "content-hash": "5adb7d65ca17fd287b24f0a5df330dee",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -2746,93 +2746,6 @@
                 }
             ],
             "time": "2026-08-24T17:13:02+00:00"
-        },
-        {
-            "name": "johnrivera7/filament-custom-dashboard-widgets",
-            "version": "1.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Johnrivera7/filament-custom-dashboard-widgets.git",
-                "reference": "3edbdaa49ab867874c1935d93b8cfeadea6afaa3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Johnrivera7/filament-custom-dashboard-widgets/zipball/3edbdaa49ab867874c1935d93b8cfeadea6afaa3",
-                "reference": "3edbdaa49ab867874c1935d93b8cfeadea6afaa3",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^5.0",
-                "filament/forms": "^5.0",
-                "filament/tables": "^5.0",
-                "illuminate/contracts": "^11.0|^12.0|^13.0",
-                "php": "^8.2",
-                "spatie/laravel-package-tools": "^1.16"
-            },
-            "require-dev": {
-                "larastan/larastan": "^3.0",
-                "laravel/pint": "^1.0",
-                "nunomaduro/collision": "^8.0",
-                "orchestra/testbench": "^9.0|^10.0|^11.0",
-                "pestphp/pest": "^3.7|^4.0",
-                "pestphp/pest-plugin-arch": "^3.0|^4.0",
-                "pestphp/pest-plugin-laravel": "^3.0|^4.0",
-                "pestphp/pest-plugin-livewire": "^3.0|^4.0",
-                "rector/rector": "^2.0",
-                "spatie/laravel-ray": "^1.26"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "JohnRivera7\\FilamentWidgetGrid\\FilamentWidgetGridServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "JohnRivera7\\FilamentWidgetGrid\\": "src/",
-                    "JohnRivera7\\FilamentWidgetGrid\\Database\\Factories\\": "database/factories/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "John Rivera",
-                    "email": "johnriveragonzalez7@gmail.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Customizable Filament dashboard widgets: drag, resize, and arrange on a permission-aware collage grid with layouts and templates.",
-            "homepage": "https://github.com/Johnrivera7/filament-custom-dashboard-widgets",
-            "keywords": [
-                "custom-dashboard-widgets",
-                "customizable-dashboard-widgets",
-                "dashboard",
-                "drag-and-drop",
-                "draggable",
-                "filament",
-                "filament-custom-dashboard-widgets",
-                "filament-plugin",
-                "filamentphp",
-                "johnrivera7",
-                "laravel",
-                "widgets"
-            ],
-            "support": {
-                "issues": "https://github.com/Johnrivera7/filament-custom-dashboard-widgets/issues",
-                "source": "https://github.com/Johnrivera7/filament-custom-dashboard-widgets"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/Johnrivera7",
-                    "type": "github"
-                }
-            ],
-            "time": "2026-08-24T18:26:34+00:00"
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
@@ -5766,68 +5679,6 @@
                 "source": "https://github.com/bobthecow/psysh/tree/v0.12.24"
             },
             "time": "2026-06-29T15:41:09+00:00"
-        },
-        {
-            "name": "pxlrbt/filament-environment-indicator",
-            "version": "v3.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pxlrbt/filament-environment-indicator.git",
-                "reference": "35e9de9c5d56451e4be2b39edb2af2d03170d31b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pxlrbt/filament-environment-indicator/zipball/35e9de9c5d56451e4be2b39edb2af2d03170d31b",
-                "reference": "35e9de9c5d56451e4be2b39edb2af2d03170d31b",
-                "shasum": ""
-            },
-            "require": {
-                "filament/filament": "^4.0|^5.0",
-                "php": "^8.0"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.10"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "\\pxlrbt\\FilamentEnvironmentIndicator\\FilamentEnvironmentIndicatorServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "pxlrbt\\FilamentEnvironmentIndicator\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dennis Koch",
-                    "email": "hey@denniskoch.dev"
-                }
-            ],
-            "description": "Indicator for the current environment inside Filament",
-            "keywords": [
-                "environment indicator",
-                "filament",
-                "laravel-filament"
-            ],
-            "support": {
-                "issues": "https://github.com/pxlrbt/filament-environment-indicator/issues",
-                "source": "https://github.com/pxlrbt/filament-environment-indicator/tree/v3.6.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/pxlrbt",
-                    "type": "github"
-                }
-            ],
-            "time": "2026-08-12T16:39:12+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -10883,6 +10734,72 @@
                 }
             ],
             "time": "2026-02-21T00:29:45+00:00"
+        },
+        {
+            "name": "pestphp/pest-plugin-livewire",
+            "version": "v4.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pestphp/pest-plugin-livewire.git",
+                "reference": "0b5a137ec6ceadd19dd2c59b9b60039d64f6b4d2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pestphp/pest-plugin-livewire/zipball/0b5a137ec6ceadd19dd2c59b9b60039d64f6b4d2",
+                "reference": "0b5a137ec6ceadd19dd2c59b9b60039d64f6b4d2",
+                "shasum": ""
+            },
+            "require": {
+                "livewire/livewire": "^3.7.4|^4.0.1",
+                "pestphp/pest": "^4.3.1",
+                "php": "^8.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.9.0",
+                "pestphp/pest-dev-tools": "^4.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Autoload.php"
+                ],
+                "psr-4": {
+                    "Pest\\Livewire\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "The Pest Livewire Plugin",
+            "keywords": [
+                "framework",
+                "livewire",
+                "pest",
+                "php",
+                "plugin",
+                "test",
+                "testing",
+                "unit"
+            ],
+            "support": {
+                "source": "https://github.com/pestphp/pest-plugin-livewire/tree/v4.1.0"
+            },
+            "funding": [
+                {
+                    "url": "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/nunomaduro",
+                    "type": "github"
+                },
+                {
+                    "url": "https://www.patreon.com/nunomaduro",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2026-01-16T00:56:22+00:00"
         },
         {
             "name": "pestphp/pest-plugin-mutate",

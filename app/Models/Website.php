@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\WebsiteEnvironment;
+use Carbon\CarbonImmutable;
 use Database\Factories\WebsiteFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,17 +19,17 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property WebsiteEnvironment $environment
  * @property string|null $bugsnag_project_id
  * @property int|null $bugsnag_open_errors
- * @property \Carbon\CarbonImmutable|null $bugsnag_synced_at
+ * @property CarbonImmutable|null $bugsnag_synced_at
  * @property string|null $bugsnag_sync_error
  * @property string|null $bridge_site_id
  * @property int $lock_level
  * @property int $desired_lock_level
  * @property string|null $lock_reason
  * @property int $directive_seq
- * @property \Carbon\CarbonImmutable|null $last_seen_at
- * @property \Carbon\CarbonImmutable|null $last_heartbeat_at
- * @property \Carbon\CarbonImmutable|null $health_alerted_at
- * @property \Carbon\CarbonImmutable|null $enrolled_at
+ * @property CarbonImmutable|null $last_seen_at
+ * @property CarbonImmutable|null $last_heartbeat_at
+ * @property CarbonImmutable|null $health_alerted_at
+ * @property CarbonImmutable|null $enrolled_at
  * @property array<string, mixed>|null $health
  */
 final class Website extends Model
@@ -43,6 +44,43 @@ final class Website extends Model
      */
     protected $hidden = [
         'bugsnag_project_key',
+    ];
+
+    /**
+     * Every column except the key and timestamps. These models are reached
+     * only through the admin panel and internal services, never from request
+     * input, but they are listed explicitly rather than unguarded so that a
+     * new column has to be opted in deliberately.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'bridge_site_id',
+        'client_id',
+        'label',
+        'url',
+        'environment',
+        'tech_stack_notes',
+        'hosting_provider',
+        'server_host',
+        'repository_url',
+        'management_url',
+        'mailcoach_url',
+        'bugsnag_project_url',
+        'bugsnag_project_key',
+        'bugsnag_project_id',
+        'bugsnag_open_errors',
+        'bugsnag_synced_at',
+        'bugsnag_sync_error',
+        'lock_level',
+        'desired_lock_level',
+        'lock_reason',
+        'directive_seq',
+        'last_seen_at',
+        'last_heartbeat_at',
+        'health_alerted_at',
+        'enrolled_at',
+        'health',
     ];
 
     /** @return BelongsTo<Client, $this> */
