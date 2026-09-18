@@ -1476,6 +1476,44 @@ textarea.contact__input {
     color: rgba(255, 255, 255, 1);
 }
 
+.site-footer__bottom {
+    max-width: 1152px;
+    margin: 1.75rem auto 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.site-footer__admin {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: rgba(255, 255, 255, 0.45);
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.site-footer__admin:hover {
+    color: rgba(255, 255, 255, 1);
+    border-color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.site-footer__admin-icon {
+    display: inline-flex;
+    opacity: 0.7;
+}
+
 /*
 |--------------------------------------------------------------------------
 | Overlay engine
