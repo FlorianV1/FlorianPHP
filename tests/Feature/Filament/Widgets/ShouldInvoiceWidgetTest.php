@@ -29,6 +29,10 @@ it('renders the dashboard widgets', function (string $widget) {
 ]);
 
 it('creates a draft invoice from a due retainer and advances its due date', function () {
+    // Spelled out, because the totals below are the VAT-charging ones and the
+    // app's default regime charges none.
+    storeVatRegisteredIdentity();
+
     $retainer = Retainer::factory()->create([
         'interval' => RetainerInterval::Monthly,
         'amount' => 150,
@@ -46,8 +50,19 @@ it('creates a draft invoice from a due retainer and advances its due date', func
     expect($invoice)->not->toBeNull()
         ->and($invoice->status)->toBe(InvoiceStatus::Draft)
         ->and($invoice->client_id)->toBe($retainer->client_id)
+        ->and($invoice->retainer_id)->toBe($retainer->id)
         ->and((float) $invoice->subtotal)->toBe(150.0)
         ->and((float) $invoice->total)->toBe(181.5)
         ->and($retainer->refresh()->next_due_date->toDateString())
-        ->toBe($originalDueDate->addMonth()->toDateString());
+        ->toBe($originalDueDate->addMonthNoOverflow()->toDateString());
+});
+
+it('bills no VAT when there is no VAT registration behind the invoice', function () {
+    $retainer = Retainer::factory()->create(['amount' => 150]);
+
+    livewire(ShouldInvoiceWidget::class)
+        ->callAction(TestAction::make('createDraft')->table($retainer))
+        ->assertNotified();
+
+    expect((float) Invoice::query()->latest('id')->first()->total)->toBe(150.0);
 });

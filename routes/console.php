@@ -11,6 +11,11 @@ Artisan::command('inspire', function () {
 
 Schedule::command('invoices:mark-overdue')->dailyAt('06:00');
 
+// Draft (never send) the invoice for every retainer whose period has started,
+// then mail the admins what is waiting. Runs after mark-overdue so the summary
+// mail reflects the day's statuses.
+Schedule::command('invoices:issue-recurring')->dailyAt('06:15')->withoutOverlapping();
+
 // Push an alert the minute a site turns red (down or silent) or recovers.
 Schedule::command('sites:check-health')->everyMinute();
 

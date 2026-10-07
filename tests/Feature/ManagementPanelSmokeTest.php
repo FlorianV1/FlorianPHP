@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Management\Pages\BillingSettings;
 use App\Filament\Management\Pages\ManagementDashboard;
 use App\Filament\Management\Widgets\LeadsOverviewWidget;
 use App\Filament\Management\Widgets\LeadsTrendChart;
@@ -88,6 +89,14 @@ it('shows the inbound pipeline on the dashboard', function () {
         ->assertSee('Latest enquiries')
         ->assertSee('Jane Prospect')
         ->assertDontSee('Spam Bot');
+});
+
+it('serves the billing identity page to an admin', function () {
+    $this->actingAs(User::factory()->admin()->create());
+
+    $this->get(BillingSettings::getUrl(panel: 'management'))
+        ->assertSuccessful()
+        ->assertSee('Billing identity');
 });
 
 it('does not leak management widgets into the website panel', function () {

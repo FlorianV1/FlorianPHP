@@ -31,7 +31,20 @@ final class RetainerFactory extends Factory
             'interval' => RetainerInterval::Monthly,
             'next_due_date' => now()->startOfMonth()->addDays(fake()->numberBetween(0, 27)),
             'active' => true,
+            'auto_invoice' => false,
         ];
+    }
+
+    /**
+     * Opted in to the unattended run, and due today so a test does not have
+     * to travel in time to trigger it.
+     */
+    public function automatic(): self
+    {
+        return $this->state([
+            'auto_invoice' => true,
+            'next_due_date' => today(),
+        ]);
     }
 
     public function quarterly(): self

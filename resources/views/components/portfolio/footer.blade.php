@@ -2,6 +2,10 @@
 
 @php
     use App\Support\SiteBranding;
+    use Filament\Facades\Filament;
+
+    /** The default panel owns the login screen, so it is the one entry point worth linking. */
+    $adminUrl = url(Filament::getDefaultPanel()->getPath());
 
     $socials = collect($profile?->social_links ?? [])
         ->map(function (array $social) {
@@ -28,13 +32,8 @@
     <div class="site-footer__inner">
 
         {{-- Left --}}
-        <div>
-            <div class="site-footer__brand">
-                <span class="site-footer__brand-prefix">{{ SiteBranding::get('logo_prefix') }}</span>{{ SiteBranding::get('logo_text') }}
-            </div>
-            <div class="site-footer__copy">
-                © {{ date('Y') }} {{ SiteBranding::get('full_name') }}. {{ $profile->footer_tagline ?? 'Built with Laravel & love.' }}
-            </div>
+        <div class="site-footer__brand">
+            <span class="site-footer__brand-prefix">{{ SiteBranding::get('logo_prefix') }}</span>{{ SiteBranding::get('logo_text') }}
         </div>
 
         {{-- Right — every link carries a visible text label, so the accessible
@@ -65,5 +64,19 @@
             @endforeach
         </div>
 
+    </div>
+
+    {{-- Bottom bar — copyright on the left, the way back into the panel on the right. --}}
+    <div class="site-footer__bottom">
+        <div class="site-footer__copy">
+            © {{ date('Y') }} {{ SiteBranding::get('full_name') }}. {{ $profile->footer_tagline ?? 'Built with Laravel & love.' }}
+        </div>
+
+        <a href="{{ $adminUrl }}" class="site-footer__admin">
+            <span class="site-footer__admin-icon" aria-hidden="true">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            </span>
+            Admin
+        </a>
     </div>
 </footer>

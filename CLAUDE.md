@@ -8,7 +8,7 @@ company for SMBs".
 
 | | |
 |---|---|
-| PHP | **8.5** (`composer.json` requires `^8.5`) |
+| PHP | requires **^8.4**; Forge runs **8.4.15**, local Herd is isolated to **8.5** |
 | Laravel | 13.x |
 | Filament | 5.x (two panels) |
 | Livewire | 4.x |
@@ -19,8 +19,13 @@ company for SMBs".
 
 ## Toolchain — read this before running anything
 
-Herd's global `php` is **8.4** and this repo requires 8.5, so a bare `php`/`composer` aborts with
-`Composer detected issues in your platform`. Always invoke:
+This site is isolated to PHP **8.5** in Herd, but the Forge server runs **8.4.15**, and
+`composer.json` requires `^8.4` so both work. `config.platform.php` is pinned to `8.4.15`, so
+Composer resolves against the production version — a dependency needing 8.5 can never be locked
+here and then fail on deploy. Do not raise either without upgrading the server first.
+
+Herd's global `php` is 8.4 while this site is 8.5, so keep using the explicit binary to match
+what the tests and the served site run on:
 
 ```bash
 # artisan

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Factories;
 
 use App\Enums\InvoiceStatus;
+use App\Enums\VatRegime;
 use App\Models\Client;
 use App\Models\Invoice;
 use Carbon\CarbonImmutable;
@@ -28,11 +29,26 @@ final class InvoiceFactory extends Factory
             'issue_date' => $issueDate,
             'due_date' => $issueDate->addDays(14),
             'status' => InvoiceStatus::Paid,
+            'vat_regime' => VatRegime::Standard,
             'vat_rate' => 21,
             'paid_at' => $issueDate->addDays(fake()->numberBetween(3, 20)),
             'external_reference' => null,
             'notes' => null,
         ];
+    }
+
+    /**
+     * Issued with no VAT registration behind it: a nota, no VAT row, total
+     * equal to the subtotal.
+     */
+    public function withoutVatRegistration(): self
+    {
+        return $this->state([
+            'vat_regime' => VatRegime::NotRegistered,
+            'vat_rate' => 0,
+            'vat_amount' => 0,
+            'vat_note' => VatRegime::NotRegistered->invoiceNote(),
+        ]);
     }
 
     public function draft(): self
