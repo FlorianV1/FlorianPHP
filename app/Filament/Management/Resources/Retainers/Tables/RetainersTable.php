@@ -42,10 +42,15 @@ final class RetainersTable
                     ->sortable(),
                 IconColumn::make('active')
                     ->boolean(),
+                IconColumn::make('auto_invoice')
+                    ->label('Auto')
+                    ->boolean(),
             ])
             ->defaultSort('next_due_date')
             ->filters([
                 TernaryFilter::make('active'),
+                TernaryFilter::make('auto_invoice')
+                    ->label('Invoiced automatically'),
                 SelectFilter::make('interval')
                     ->options(RetainerInterval::class),
             ])

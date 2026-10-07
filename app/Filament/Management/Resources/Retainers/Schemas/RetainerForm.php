@@ -51,6 +51,10 @@ final class RetainerForm
                             ->required(),
                         Toggle::make('active')
                             ->default(true),
+                        Toggle::make('auto_invoice')
+                            ->label('Invoice automatically')
+                            ->helperText('The nightly run drafts this invoice as each period starts. Nothing is sent to the client until you send it.')
+                            ->default(false),
                     ]),
             ]);
     }

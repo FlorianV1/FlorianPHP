@@ -1,6 +1,11 @@
 <?php
 
+use App\Enums\VatRegime;
+use App\Models\Invoice;
+use App\Models\Settings;
 use App\SiteBridge\LockDirectiveSigner;
+use App\Support\BillingIdentity;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -29,6 +34,13 @@ pest()->extend(TestCase::class)
 | on `Route [filament.portfolio.resources.*] not defined`. Scoped to the ported
 | directories so the portfolio tests keep the website panel.
 */
+/*
+| Settings are cached in a static for the life of the process. RefreshDatabase
+| rolls the rows back but not the static, so without this a test that never
+| writes settings reads whatever the previous test stored.
+*/
+pest()->beforeEach(fn () => Settings::flush())->in('Feature', 'Unit');
+
 pest()->beforeEach(function (): void {
     Filament\Facades\Filament::setCurrentPanel('management');
 })->in(
@@ -111,4 +123,47 @@ function bridgeMetricsPayload(array $overrides = []): array
         'mailcoach' => ['value' => null, 'reason' => 'not installed'],
         'bugsnag' => ['value' => null, 'reason' => 'not configured'],
     ], $overrides);
+}
+
+/**
+ * Store a billing identity, bypassing the settings page. Defaults to the
+ * regime a brand new install has: no Handelsregister entry, no VAT id, and
+ * therefore no VAT on the invoice.
+ *
+ * @param  array<string, mixed>  $overrides
+ */
+function storeBillingIdentity(array $overrides = []): void
+{
+    Settings::set(BillingIdentity::KEY, array_merge([
+        'legal_name' => 'Florian Geense',
+        'address_line' => 'Teststraat 1',
+        'postal_code' => '1234 AB',
+        'city' => 'Amsterdam',
+        'iban' => 'NL91ABNA0417164300',
+        'vat_regime' => VatRegime::NotRegistered->value,
+    ], $overrides));
+}
+
+/**
+ * A registered, VAT-charging identity — what the invoice looks like once the
+ * KvK and the Belastingdienst have both been visited.
+ */
+function storeVatRegisteredIdentity(): void
+{
+    storeBillingIdentity([
+        'vat_regime' => VatRegime::Standard->value,
+        'kvk_number' => '12345678',
+        'vat_number' => 'NL123456789B01',
+    ]);
+}
+
+/**
+ * Render the invoice PDF to HTML, which is what the Blade template actually
+ * produces before dompdf lays it out.
+ */
+function renderInvoiceHtml(Invoice $invoice): string
+{
+    return Pdf::loadView('invoices.pdf', [
+        'invoice' => $invoice->load('lines', 'client', 'website'),
+    ])->getDomPDF()->outputHtml();
 }

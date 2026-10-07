@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\InvoiceStatus;
+use App\Enums\VatRegime;
+use App\Support\BillingIdentity;
 use Carbon\CarbonImmutable;
 use Database\Factories\InvoiceFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,6 +19,10 @@ use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property InvoiceStatus $status
+ * @property VatRegime $vat_regime
+ * @property array<string, mixed>|null $issuer
+ * @property CarbonImmutable|null $period_start
+ * @property CarbonImmutable|null $period_end
  * @property numeric-string $subtotal
  * @property numeric-string $vat_rate
  * @property numeric-string $vat_amount
@@ -31,12 +37,12 @@ final class Invoice extends Model
     use HasFactory, LogsActivity;
 
     /**
-     * Days until an invoice falls due, and the default VAT percentage — the
-     * terms every draft is created with.
+     * Fallback payment term, used only when the billing settings have never
+     * been saved. The rate is no longer a constant: it comes from the VAT
+     * regime, because charging 21% needs a VAT registration to charge it
+     * under.
      */
-    private const PAYMENT_TERMS_DAYS = 14;
-
-    private const DEFAULT_VAT_RATE = 21;
+    private const FALLBACK_PAYMENT_TERMS_DAYS = 14;
 
     /**
      * The next `INV-YYYY-NNN` for the current year. Derived from the highest
@@ -60,18 +66,31 @@ final class Invoice extends Model
      * Open a fresh draft invoice for a client (optionally tied to a website)
      * with the standard terms. Shared by the retainer and logged-work flows
      * so draft creation lives in exactly one place.
+     *
+     * @param  array<string, mixed>  $attributes  Extra columns — the recurring
+     *                                            run passes the retainer and
+     *                                            the period it covers.
      */
-    public static function openDraftFor(Client $client, ?Website $website = null): self
+    public static function openDraftFor(Client $client, ?Website $website = null, array $attributes = []): self
     {
-        return self::query()->create([
+        $regime = BillingIdentity::regime();
+        $terms = BillingIdentity::paymentTermsDays() ?: self::FALLBACK_PAYMENT_TERMS_DAYS;
+
+        return self::query()->create(array_merge([
             'client_id' => $client->id,
             'website_id' => $website?->id,
             'number' => self::nextNumber(),
             'issue_date' => today(),
-            'due_date' => today()->addDays(self::PAYMENT_TERMS_DAYS),
+            'due_date' => today()->addDays($terms),
             'status' => InvoiceStatus::Draft,
-            'vat_rate' => self::DEFAULT_VAT_RATE,
-        ]);
+            // A snapshot, not a live read: an invoice sent before the
+            // Handelsregister entry existed has to keep printing without a
+            // KvK number for the rest of its seven years.
+            'issuer' => BillingIdentity::snapshot(),
+            'vat_regime' => $regime,
+            'vat_rate' => $regime->rate(),
+            'vat_note' => $regime->invoiceNote(),
+        ], $attributes));
     }
 
     /**
@@ -85,12 +104,18 @@ final class Invoice extends Model
     protected $fillable = [
         'client_id',
         'website_id',
+        'retainer_id',
+        'issuer',
+        'period_start',
+        'period_end',
         'number',
         'issue_date',
         'due_date',
         'status',
         'subtotal',
         'vat_rate',
+        'vat_regime',
+        'vat_note',
         'vat_amount',
         'total',
         'paid_at',
@@ -102,6 +127,12 @@ final class Invoice extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    /** @return BelongsTo<Retainer, $this> */
+    public function retainer(): BelongsTo
+    {
+        return $this->belongsTo(Retainer::class);
     }
 
     /** @return BelongsTo<Website, $this> */
@@ -129,6 +160,27 @@ final class Invoice extends Model
             'vat_amount' => $vatAmount,
             'total' => round($subtotal + $vatAmount, 2),
         ])->save();
+    }
+
+    /**
+     * The sender block for the PDF. Invoices from before the snapshot existed
+     * have none and fall back to the current settings.
+     *
+     * @return array<string, mixed>
+     */
+    public function issuerDetails(): array
+    {
+        return $this->issuer ?? BillingIdentity::snapshot();
+    }
+
+    /**
+     * Whether this invoice carries a VAT row. Read off the stored rate, not
+     * the regime, so an invoice issued under a regime that has since changed
+     * still prints the way it was sent.
+     */
+    public function chargesVat(): bool
+    {
+        return (float) $this->vat_rate > 0.0;
     }
 
     public function isOutstanding(): bool
@@ -167,6 +219,10 @@ final class Invoice extends Model
             'issue_date' => 'immutable_date',
             'due_date' => 'immutable_date',
             'status' => InvoiceStatus::class,
+            'vat_regime' => VatRegime::class,
+            'issuer' => 'array',
+            'period_start' => 'immutable_date',
+            'period_end' => 'immutable_date',
             'subtotal' => 'decimal:2',
             'vat_rate' => 'decimal:2',
             'vat_amount' => 'decimal:2',

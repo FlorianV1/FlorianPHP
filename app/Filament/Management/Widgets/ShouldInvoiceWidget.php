@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Management\Widgets;
 
+use App\Billing\IssueRetainerInvoice;
 use App\Filament\Management\Resources\Invoices\InvoiceResource;
-use App\Models\Invoice;
 use App\Models\Retainer;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
@@ -24,7 +25,7 @@ final class ShouldInvoiceWidget extends TableWidget
     {
         return $table
             ->heading('Should invoice this month')
-            ->description('Active retainers due in the current period. Un-invoiced logged work has its own panel below.')
+            ->description('Active retainers due in the current period. Ones marked for automatic billing are drafted by the nightly run; the rest wait for the button. Un-invoiced logged work has its own panel below.')
             ->query(
                 Retainer::query()
                     ->where('active', true)
@@ -40,6 +41,12 @@ final class ShouldInvoiceWidget extends TableWidget
                     ->money('EUR'),
                 TextColumn::make('interval')
                     ->badge(),
+                IconColumn::make('auto_invoice')
+                    ->label('Auto')
+                    ->boolean()
+                    ->tooltip(fn (Retainer $record): string => $record->auto_invoice
+                        ? 'Drafted automatically by the nightly run'
+                        : 'Billed only when you press the button'),
                 TextColumn::make('next_due_date')
                     ->date()
                     ->color(fn (Retainer $record): ?string => $record->next_due_date->isPast() ? 'danger' : null),
@@ -50,21 +57,21 @@ final class ShouldInvoiceWidget extends TableWidget
                     ->icon(Heroicon::OutlinedDocumentPlus)
                     ->requiresConfirmation()
                     ->modalDescription(fn (Retainer $record): string => "Creates a draft invoice of €{$record->amount} for {$record->client->company_name} and advances the retainer's next due date.")
-                    ->action(function (Retainer $record): void {
-                        $invoice = Invoice::openDraftFor($record->client, $record->website);
+                    // Same service the scheduled run uses, so clicking this
+                    // the morning after the cron already billed the period is
+                    // a no-op rather than a second charge.
+                    ->action(function (Retainer $record, IssueRetainerInvoice $issuer): void {
+                        $invoice = $issuer->issue($record);
 
-                        $invoice->lines()->create([
-                            'description' => $record->description.' — '.$record->next_due_date->format('M Y'),
-                            'quantity' => 1,
-                            'unit_price' => $record->amount,
-                            'amount' => $record->amount,
-                        ]);
+                        if ($invoice === null) {
+                            Notification::make()
+                                ->title('Already invoiced')
+                                ->body("{$record->description} is paid up to ".$record->next_due_date->format('d M Y').'.')
+                                ->warning()
+                                ->send();
 
-                        $invoice->recalculateTotals();
-
-                        $record->update([
-                            'next_due_date' => $record->next_due_date->addMonths($record->interval->months()),
-                        ]);
+                            return;
+                        }
 
                         Notification::make()
                             ->title("Draft {$invoice->number} created")
